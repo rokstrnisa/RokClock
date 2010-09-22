@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 @SuppressWarnings("serial")
-class Main extends JFrame {
+public class Main extends JFrame {
 	private static final Color defaultColor = Color.GREEN;
 	private static final Color activeColor = Color.RED;
 	private static final String projFilename = "projects.txt";
@@ -33,6 +33,7 @@ class Main extends JFrame {
 		projects = loadProjectNames();
 		for (String project : projects.keySet())
 			addButton(project, projects.get(project));
+		addStopButton();
 		pack();
 		setAlwaysOnTop(true);
 		addWindowListener(new WindowAdapter() {
@@ -79,6 +80,7 @@ class Main extends JFrame {
 		long endTime = System.currentTimeMillis();
 		System.err.println(runningProject + ", " + runningSubProject + ", " + startTime + ", " + endTime);
 		runningButton.setBackground(defaultColor);
+		runningButton = null;
 		running = false;
 	}
 	
@@ -100,6 +102,19 @@ class Main extends JFrame {
 					waitThenPopup();
 				}
 			}
+		});
+		add(b);
+	}
+	
+	private void addStopButton() {
+		JButton b = new JButton("STOP");
+		b.setBackground(Color.BLACK);
+		b.setForeground(Color.GRAY);
+		b.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}			
 		});
 		add(b);
 	}

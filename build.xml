@@ -1,0 +1,19 @@
+<project name="Time Log" basedir="." default="run">
+    <property name="src.dir" value="src" />
+    <property name="bin.dir" value="bin" />
+    <property name="main-class" value="timelog.Main" />
+
+    <target name="clean">
+        <delete dir="${bin.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${bin.dir}" />
+        <javac srcdir="${src.dir}" destdir="${bin.dir}" />
+    </target>
+
+    <target name="run" depends="compile">
+        <java classpath="${bin.dir}" classname="timelog.Main" fork="true" spawn="true" />
+    </target>
+</project>
+
