@@ -1,18 +1,19 @@
-COW: CA-5555
-BOS
-CI5
-TDP
-TMN
+COW{Cowley release} : CA-5555{A specific ticket I care about}, CA-5644
+BOS{Boston release}
+CI5{Common criteria certification}
+TDP{Technical development}
+TMN{Technical management}
 REA
-LCM
-CSE
-PTR
-OSS
-RQA
-TRG
-GMN
-PMN
-PLM
-PRI
-OTH
-HOL
+LCM{Life cycle management}
+CSE{Competitive and solutions engineering}
+PTR{Consultancy and partner support}
+OSS{Open source}
+RQA{Roadmap and requirements analysis}
+TRG{Training and learning}
+GMN{General management}
+PMN{Project management}
+PLM{Personnel management}
+PRI{Production infrastructure}
+OTH{Other}
+HOL{Holidays}
+ILL{Illness}

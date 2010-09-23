@@ -48,6 +48,10 @@ line:
 
   A: x, y, z
 
+Each name can have its tooltip appended in curly brackets, e.g.:
+
+  A{A's tooltip}: x, y{y's tooltip}, z
+
 3.2 Alternative behaviour
 -------------------------
 Some window managers do not support minimisation of windows (default:

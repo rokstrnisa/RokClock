@@ -105,45 +105,20 @@ public class Main extends JFrame {
 		return result;
 	}
 
-	private void startRecording(JButton b, String project, String subProject) throws IOException {
-		if (state != State.STOPPED) stopRecording();
-		startTime = System.currentTimeMillis();
-		runningProject = project;
-		runningSubProject = subProject;
-		runningButton = b;
-		runningButton.setBackground(activeColor);
-		state = State.RUNNING;
-	}
-	
-	private void stopRecording() throws IOException {
-		switch (state) {
-			case STOPPED: return;
-			case AUTOMATIC:
-				timer.stop();
-				break;
-			case RUNNING:
-				long endTime = System.currentTimeMillis();
-				writeLogEntry(runningProject, runningSubProject, startTime, endTime);
-		}
-		runningButton.setBackground(defaultColor);
-		state = State.STOPPED;
-	}
-	
-	private void writeLogEntry(String project, String subProject, long startTime, long endTime) throws IOException {
-		String startTimeS = df.format(new Date(startTime));
-		String endTimeS = df.format(new Date(endTime));
-		String entry = runningProject + ", " + runningSubProject + ", " + startTimeS + ", " + endTimeS;
-		System.err.println(entry);
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilename, true)));
-		out.write(entry + newline);
-		out.close();
-	}
-	
-	private void addButton(final String project, final String superProject) {
+	private void addButton(String projectWTT, String superProjectWTT) {
+		// caption
+		final String project = removeTooltip(projectWTT);
+		final String superProject = removeTooltip(superProjectWTT);
 		String caption = (superProject == null ? "" : "> ") + project;
 		final JButton b = new JButton(caption);
+		// tooltip preprocessing
+		String tooltip = extractTooltip(projectWTT);
+		if (tooltip != null)
+			b.setToolTipText(tooltip);
+		// style
 		b.setBackground(defaultColor);
 		b.setHorizontalAlignment(SwingConstants.LEFT);
+		// action
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -159,7 +134,22 @@ public class Main extends JFrame {
 		});
 		add(b);
 	}
+
+	private String removeTooltip(String s) {
+		if (s == null) return null;
+		int left = s.indexOf('{');
+		if (left == -1) return s;
+		return s.substring(0, left).trim();
+	}
 	
+	private String extractTooltip(String s) {
+		if (s == null) return null;
+		int left = s.indexOf('{');
+		int right = s.lastIndexOf('}');
+		if (left == -1 || right == -1) return null;
+		return s.substring(left + 1, right).trim();
+	}
+
 	private void addStopButton() {
 		JButton b = new JButton("STOP");
 		b.setBackground(Color.BLACK);
@@ -194,6 +184,40 @@ public class Main extends JFrame {
 		return t;
 	}
 	
+	private void startRecording(JButton b, String project, String subProject) throws IOException {
+		if (state != State.STOPPED) stopRecording();
+		startTime = System.currentTimeMillis();
+		runningProject = project;
+		runningSubProject = subProject;
+		runningButton = b;
+		runningButton.setBackground(activeColor);
+		state = State.RUNNING;
+	}
+	
+	private void stopRecording() throws IOException {
+		switch (state) {
+			case STOPPED: return;
+			case AUTOMATIC:
+				timer.stop();
+				break;
+			case RUNNING:
+				long endTime = System.currentTimeMillis();
+				writeLogEntry(runningProject, runningSubProject, startTime, endTime);
+		}
+		runningButton.setBackground(defaultColor);
+		state = State.STOPPED;
+	}
+	
+	private void writeLogEntry(String project, String subProject, long startTime, long endTime) throws IOException {
+		String startTimeS = df.format(new Date(startTime));
+		String endTimeS = df.format(new Date(endTime));
+		String entry = runningProject + ", " + runningSubProject + ", " + startTimeS + ", " + endTimeS;
+		// System.err.println(entry);
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilename, true)));
+		out.write(entry + newline);
+		out.close();
+	}
+
 	private void showProblem(Exception e) {
 		JOptionPane.showMessageDialog(this, "A problem has occurred: " + e.getMessage());
 	}
