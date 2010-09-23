@@ -91,6 +91,7 @@ public class Main extends JFrame {
 		String line;
 		while ((line = br.readLine()) != null) {
 			line = line.trim();
+			if (line.startsWith("#") || line.isEmpty()) continue;
 			int colon = line.indexOf(':');
 			if (colon == -1)
 				result.put(line, null);

@@ -17,11 +17,17 @@ The window re-appears at the specified interval. If a button is pressed within
 the specified interval, the time elapsed since the window appeared will be
 counted towards the previous entry.
 
+If the task should be stopped or changed before the end of the interval, you can
+maximise the program and then click on the STOP button or a different task,
+respectively.
+
 The program generates a simple CSV log, where each entry roughly corresponds to
 each button click.
 
 2. Compilation
 --------------
+Software required: JDK 6, Ant.
+
 The program can be compiled with
 
   ant compile
@@ -62,6 +68,8 @@ interval (e.g. to stop/change the logging).
 
 4. Running the program
 ----------------------
+Software required: JRE 6 (included with JDK 6), Ant.
+
 The program can be run with
 
   ant run

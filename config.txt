@@ -1,7 +1,7 @@
 title=Time Log
 locX=600
 locY=400
-intervalInSeconds=3
+intervalInSeconds=3600
 defaultColor=0,255,0
 activeColor=255,0,0
 semiActiveColor=100,100,200
