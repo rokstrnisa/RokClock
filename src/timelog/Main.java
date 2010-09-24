@@ -27,9 +27,9 @@ public class Main extends JFrame {
 	private final boolean minimise;
 	private final Map<String, String> projects;
 	private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-	
+
 	private enum State {STOPPED, RUNNING, AUTOMATIC}
-	
+
 	private State state = State.STOPPED;
 	private Timer timer;
 	private long startTime = 0;
@@ -67,7 +67,7 @@ public class Main extends JFrame {
 		timer = createTimer();
 		setVisible(true);
 	}
-	
+
 	private String get(String key, String defaultValue) {
 		String v = config.getProperty(key);
 		return v == null ? defaultValue : v;
@@ -77,14 +77,14 @@ public class Main extends JFrame {
 		String v = config.getProperty(key);
 		return v == null ? defaultValue : Integer.parseInt(v);
 	}
-	
+
 	private Color get(String key, Color defaultValue) {
 		String v = config.getProperty(key);
 		if (v == null) return defaultValue;
 		String[] rgb = v.split(",");
 		return new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
 	}
-	
+
 	private Map<String, String> loadProjectNames() throws IOException {
 		Map<String, String> result = new LinkedHashMap<String, String>();
 		BufferedReader br = new BufferedReader(new FileReader(projectsFilename));
@@ -146,7 +146,7 @@ public class Main extends JFrame {
 		if (left == -1) return s;
 		return s.substring(0, left).trim();
 	}
-	
+
 	private String extractTooltip(String s) {
 		if (s == null) return null;
 		int left = s.indexOf('{');
@@ -167,7 +167,7 @@ public class Main extends JFrame {
 		});
 		add(b);
 	}
-	
+
 	private Timer createTimer() {
 		Timer t = new Timer(intervalInSeconds * 1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -188,7 +188,7 @@ public class Main extends JFrame {
 		});
 		return t;
 	}
-	
+
 	private void startRecording(JButton b, String project, String subProject) throws IOException {
 		if (state != State.STOPPED) stopRecording();
 		startTime = System.currentTimeMillis();
@@ -198,7 +198,7 @@ public class Main extends JFrame {
 		runningButton.setBackground(activeColor);
 		state = State.RUNNING;
 	}
-	
+
 	private void stopRecording() throws IOException {
 		switch (state) {
 			case STOPPED: return;
@@ -212,7 +212,7 @@ public class Main extends JFrame {
 		runningButton.setBackground(defaultColor);
 		state = State.STOPPED;
 	}
-	
+
 	private void writeLogEntry(String project, String subProject, long startTime, long endTime) throws IOException {
 		String startTimeS = df.format(new Date(startTime));
 		String endTimeS = df.format(new Date(endTime));
@@ -226,7 +226,7 @@ public class Main extends JFrame {
 	private void showProblem(Exception e) {
 		JOptionPane.showMessageDialog(this, "A problem has occurred: " + e.getMessage());
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		new Main();
 	}

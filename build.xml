@@ -1,19 +1,27 @@
 <project name="Time Log" basedir="." default="run">
-    <property name="src.dir" value="src" />
-    <property name="bin.dir" value="bin" />
-    <property name="main-class" value="timelog.Main" />
+	<property name="src.dir" value="src" />
+	<property name="bin.dir" value="bin" />
+	<property name="main.class" value="timelog.Main" />
 
-    <target name="clean">
-        <delete dir="${bin.dir}"/>
-    </target>
+	<target name="clean">
+		<delete dir="${bin.dir}"/>
+	</target>
 
-    <target name="compile">
-        <mkdir dir="${bin.dir}" />
-        <javac srcdir="${src.dir}" destdir="${bin.dir}" />
-    </target>
+	<target name="compile">
+		<mkdir dir="${bin.dir}" />
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" />
+	</target>
 
-    <target name="run" depends="compile">
-        <java classpath="${bin.dir}" classname="timelog.Main" fork="true" spawn="true" />
-    </target>
+	<target name="run" depends="compile">
+		<java classpath="${bin.dir}" classname="${main.class}"
+			fork="true" spawn="true" />
+	</target>
+
+	<target name="no-daemon">
+		<exec executable="java">
+			<arg value="-cp"/>
+			<arg value="${bin.dir}"/>
+			<arg value="${main.class}"/>
+		</exec>
+	</target>
 </project>
-

@@ -64,7 +64,8 @@ Some window managers do not support minimisation of windows (default:
 behaviour=minimise). In that case, specifying "behaviour=hide" in the
 "config.txt" file will instead completely hide the window. However, this does
 make it more difficult to show the window again before the end of the specified
-interval (e.g. to stop/change the logging).
+interval (e.g. to stop/change the logging). In this case, you might want to use
+the non-daemon mode to run the program (see below).
 
 4. Running the program
 ----------------------
@@ -80,6 +81,12 @@ or just
 
 since "run" the the default target. Both of these options also compile the
 program if required.
+
+You can run the program in non-daemon mode using
+
+  ant no-daemon
+
+This will block ant while the program runs, so you can close it with CTRL-C.
 
 5. Feedback
 -----------
