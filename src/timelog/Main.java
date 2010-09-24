@@ -91,7 +91,10 @@ public class Main extends JFrame {
 		String line;
 		while ((line = br.readLine()) != null) {
 			line = line.trim();
-			if (line.startsWith("#") || line.isEmpty()) continue;
+			int hash = line.indexOf('#');
+			if (hash != -1)
+				line = line.substring(0, hash).trim();
+			if (line.isEmpty()) continue;
 			int colon = line.indexOf(':');
 			if (colon == -1)
 				result.put(line, null);
@@ -99,7 +102,8 @@ public class Main extends JFrame {
 				String project = line.substring(0, colon);
 				result.put(project, null);
 				for (String subProject : line.substring(colon + 1).trim().split(","))
-					result.put(subProject.trim(), project);
+					if (!subProject.trim().isEmpty())
+						result.put(subProject.trim(), project);
 			}
 		}
 		br.close();
