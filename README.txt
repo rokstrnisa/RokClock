@@ -80,3 +80,11 @@ or just
 
 since "run" the the default target. Both of these options also compile the
 program if required.
+
+5. Feedback
+-----------
+All feedback is much appreciated. Please send it to:
+
+  Rok Strnisa <rok.strnisa@citrix.com>
+
+Thanks.
