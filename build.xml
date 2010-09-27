@@ -1,10 +1,23 @@
 <project name="Time Log" basedir="." default="run">
+	<property name="config.file" value="config.txt" />
+	<property name="projects.file" value="projects.txt" />
+	<property name="main.class" value="timelog.Main" />
 	<property name="src.dir" value="src" />
 	<property name="bin.dir" value="bin" />
-	<property name="main.class" value="timelog.Main" />
+	<property name="dist.dir" value="dist" />
+	<property name="contents.dir" value="${dist.dir}/TimeLog" />
+	<property name="jar.file" value="${contents.dir}/TimeLog.jar" />
+	<property name="zip.file" value="${dist.dir}/TimeLog.zip" />
 
-	<target name="clean">
-		<delete dir="${bin.dir}"/>
+	<target name="clean-dist">
+		<delete dir="${contents.dir}" />
+		<mkdir dir="${contents.dir}" />
+	</target>
+
+	<target name="clean" depends="clean-dist">
+		<delete dir="${bin.dir}" />
+		<delete file="${jar.file}" />
+		<delete file="${zip.file}" />
 	</target>
 
 	<target name="compile">
@@ -23,5 +36,26 @@
 			<arg value="${bin.dir}"/>
 			<arg value="${main.class}"/>
 		</exec>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${jar.file}" basedir="${bin.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="dist" depends="clean-dist,jar">
+		<copy todir="${contents.dir}" overwrite="true" preservelastmodified="true">
+			<filelist dir=".">
+				<file name="${config.file}" />
+				<file name="${projects.file}" />
+			</filelist>
+			<fileset file="${dist.dir}/run.*" />
+			<fileset file="${dist.dir}/README.txt" />
+		</copy>
+		<chmod file="${contents.dir}/run.*" perm="+x" />
+		<zip destfile="${zip.file}" basedir="${contents.dir}" />
 	</target>
 </project>
