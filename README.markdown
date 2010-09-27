@@ -30,7 +30,7 @@ Software required: JDK 6, Ant.
 
 The program can be compiled with
 
-  ant compile
+    ant compile
 
 Since the program is written in Java, it should compile and run on many
 platforms.
@@ -52,11 +52,11 @@ mainly you care about logging individually). For example, to define a project
 "A" with sub-projects "x", "y", and "z", the project file should contain the
 line:
 
-  A: x, y, z
+    A: x, y, z
 
 Each name can have its tooltip appended in curly brackets, e.g.:
 
-  A{A's tooltip}: x, y{y's tooltip}, z
+    A{A's tooltip}: x, y{y's tooltip}, z
 
 3.2 Alternative behaviour
 -------------------------
@@ -73,18 +73,18 @@ Software required: JRE 6 (included with JDK 6), Ant.
 
 The program can be run with
 
-  ant run
+    ant run
 
 or just
 
-  ant
+    ant
 
 since "run" the the default target. Both of these options also compile the
 program if required.
 
 You can run the program in non-daemon mode using
 
-  ant no-daemon
+    ant no-daemon
 
 This will block ant while the program runs, so you can close it with CTRL-C.
 
@@ -92,6 +92,6 @@ This will block ant while the program runs, so you can close it with CTRL-C.
 -----------
 All feedback is much appreciated. Please send it to:
 
-  Rok Strnisa <rok.strnisa@citrix.com>
+  [Rok Strnisa](mailto:rok.strnisa@citrix.com "Rok Strnisa")
 
 Thanks.
