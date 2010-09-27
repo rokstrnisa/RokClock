@@ -10,10 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.Timer;
 
 @SuppressWarnings("serial")
@@ -37,7 +34,8 @@ public class Main extends JFrame {
 	private String runningSubProject = null;
 	private JButton runningButton = null;
 
-	private Main() throws IOException {
+	private Main() throws Exception {
+		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		// loading settings
 		config.load(new FileInputStream(configFilename));
 		setTitle(get("title", "Time Log"));
@@ -227,7 +225,7 @@ public class Main extends JFrame {
 		JOptionPane.showMessageDialog(this, "A problem has occurred: " + e.getMessage());
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		new Main();
 	}
 }
