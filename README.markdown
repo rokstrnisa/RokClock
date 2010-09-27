@@ -92,6 +92,6 @@ This will block ant while the program runs, so you can close it with CTRL-C.
 -----------
 All feedback is much appreciated. Please send it to:
 
-  [Rok Strnisa](mailto:rok.strnisa@citrix.com "Rok Strnisa")
+  [Rok Strnisa](mailto:rok.strnisa@citrix.com "Rrok.strnisa@citrix.com")
 
 Thanks.
