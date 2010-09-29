@@ -24,8 +24,9 @@ public class Main extends JFrame {
 		getContentPane().setLayout(layout);
 //		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridx = constraints.gridy = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
+		constraints.weightx = constraints.weighty = 0.5;
+		constraints.fill = GridBagConstraints.BOTH;
+//		constraints.anchor = GridBagConstraints.NORTHWEST;
 		layout.setConstraints(projectsTree, constraints);
 		getContentPane().add(projectsTree);
 		JButton stopButton = createStopButton();
