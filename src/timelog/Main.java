@@ -1,16 +1,9 @@
 package timelog;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class Main extends JFrame {
@@ -20,16 +13,19 @@ public class Main extends JFrame {
 
 	private Main() throws Exception {
 		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-		// loading settings
+		// basic settings
 		setTitle(config.getTitle());
 		setLocation(config.getLocX(), config.getLocY());
+		setBackground(Color.BLACK);
 		// loading projects + GUI
 		projectsTree = new ProjectsTree(this, config);
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
 		getContentPane().setLayout(layout);
-		constraints.fill = GridBagConstraints.BOTH;
+//		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridx = constraints.gridy = 0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.NORTHWEST;
 		layout.setConstraints(projectsTree, constraints);
 		getContentPane().add(projectsTree);
 		JButton stopButton = createStopButton();

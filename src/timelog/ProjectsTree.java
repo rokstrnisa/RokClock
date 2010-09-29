@@ -1,42 +1,39 @@
 package timelog;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.text.*;
+import java.util.*;
 import java.util.List;
 
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 
 @SuppressWarnings("serial")
-class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
+class ProjectsTree extends JTree implements TimeLog {
+	class ProjectNode extends DefaultMutableTreeNode {
+		  private String tooltip;
+
+		  public ProjectNode(String caption, String tooltip) {
+		    super(caption);
+		    this.tooltip = tooltip;
+		  }
+
+		  public String getTooltip() {
+		    return tooltip;
+		  }
+	}
+	
 	private final String newline = System.getProperty("line.separator");
 	private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
 	private final Frame frame;
 	private final Config config;
 	private final DefaultMutableTreeNode root;
+	private PopupMenu popupMenu;
+	private TreePath lastRightClickedPath;
 	
 	private String[] currentPojectPath = null;
 	
@@ -57,12 +54,47 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 		setBackground(config.getDefaultColor());
 		setCellRenderer(getTreeCellRenderer());
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		addTreeSelectionListener(this);
+		addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				switch (e.getButton()) {
+					case MouseEvent.BUTTON1: onLeftMouseClick(); break;
+					case MouseEvent.BUTTON3: onRightMouseClick(e); break;
+				}
+			}			
+		});
 		timer = createTimer();
+		ToolTipManager.sharedInstance().registerComponent(this);
+		frame.add(createPopupMenu());
+	}
+	
+	public String getToolTipText(MouseEvent e) {
+		if (getRowForLocation(e.getX(), e.getY()) == -1)
+			return null;
+		TreePath path = getPathForLocation(e.getX(), e.getY());
+		return ((ProjectNode) path.getLastPathComponent()).getTooltip();
+	}
+	
+	private PopupMenu createPopupMenu() {
+		popupMenu = new PopupMenu();
+		MenuItem deleteMI = new MenuItem("Delete");
+		deleteMI.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lastRightClickedPath.getLastPathComponent();
+				// TODO: delete node, save projects
+			}			
+		});
+		MenuItem addChildMI = new MenuItem("Add child to");
+		addChildMI.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO: add child node, save projects
+			}			
+		});
+		popupMenu.add(deleteMI);
+		popupMenu.add(addChildMI);
+		return popupMenu;	
 	}
 	
 	private void loadProjects(DefaultMutableTreeNode root) throws IOException {
-		//ProjectTree projectTree = new ProjectTree();
 		List<DefaultMutableTreeNode> nodeChain = new ArrayList<DefaultMutableTreeNode>();
 		nodeChain.add(root);
 		BufferedReader br = new BufferedReader(new FileReader(config.getProjectsFilename()));
@@ -79,8 +111,7 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 			line = line.substring(depth);
 			while (depth < nodeChain.size())
 				nodeChain.remove(depth); // remove irrelevant part of the chain
-			DefaultMutableTreeNode node = new DefaultMutableTreeNode(extractName(line));
-			// String tooltip = extractTooltip(line);
+			ProjectNode node = new ProjectNode(extractName(line), extractTooltip(line));
 			if (depth == 0) root.add(node);
 			else nodeChain.get(depth - 1).add(node);
 			nodeChain.add(node);
@@ -95,13 +126,13 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 		return s.substring(0, left).trim();
 	}
 	
-//	private String extractTooltip(String s) {
-//		if (s == null) return null;
-//		int left = s.indexOf('{');
-//		int right = s.lastIndexOf('}');
-//		if (left == -1 || right == -1) return null;
-//		return s.substring(left + 1, right).trim();
-//	}
+	private String extractTooltip(String s) {
+		if (s == null) return null;
+		int left = s.indexOf('{');
+		int right = s.lastIndexOf('}');
+		if (left == -1 || right == -1) return null;
+		return s.substring(left + 1, right).trim();
+	}
 	
 	private Timer createTimer() {
 		Timer t = new Timer(config.getIntervalInSeconds() * 1000, new ActionListener() {
@@ -124,7 +155,11 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 			}
 
 			public Color getBackgroundSelectionColor() {
-				return config.getActiveColor();
+				return getCurrentSelectionColor();
+			}
+
+			public Color getBorderSelectionColor() {
+				return null;
 			}
 
 			public Dimension getPreferredSize() {
@@ -138,8 +173,8 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 			}
 		};
 	}
-
-	public void valueChanged(TreeSelectionEvent e) {
+	
+	private void onLeftMouseClick() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) getLastSelectedPathComponent();
 		if (node == null)
 			return;
@@ -151,8 +186,14 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 			if (state == State.AUTOMATIC)
 				state = State.RUNNING;
 			startRecording(projectPath);
+			minimiseOrHide();
 			timer.restart();
 		} catch (Exception ex) {displayProblem(ex);}
+	}
+	
+	private void onRightMouseClick(MouseEvent e) {
+		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
+		popupMenu.show(frame, e.getX(), e.getY());
 	}
 
 	public void startRecording(String[] projectPath) throws Exception {
@@ -160,13 +201,6 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 		this.currentPojectPath = projectPath;
 		startTime = System.currentTimeMillis();
 		switchToActiveState(projectPath);
-		new Thread() {
-			public void run() {
-				try {Thread.sleep(300);}
-				catch (InterruptedException e) {e.printStackTrace();}
-				//minimiseOrHide();
-			}
-		}.start();
 	}
 
 	public void stopRecording() throws Exception {
@@ -180,7 +214,6 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 				writeLogEntry(startTime, System.currentTimeMillis());
 		}
 		switchToStoppedState();
-		//unminimiseOrShow();
 	}
 	
 	public void doPeriodicAction() {
@@ -193,6 +226,7 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 				switchToSemiActiveState();
 			}
 		} catch (Exception ex) {displayProblem(ex);}
+		unminimiseOrShow();
 	}
 	
 	public void writeLogEntry(long startTime, long endTime) throws Exception {
@@ -207,34 +241,48 @@ class ProjectsTree extends JTree implements TreeSelectionListener, TimeLog {
 		out.close();
 	}
 	
+	private Color getCurrentSelectionColor() {
+		switch (state) {
+			case AUTOMATIC: return config.getSemiActiveColor();
+			case RUNNING: return config.getActiveColor();
+			case STOPPED:
+			default: return config.getDefaultColor();
+		}
+	}
+	
 	public void switchToActiveState(String[] projectPath) {
 		state = State.RUNNING;
-		// runningButton.setBackground(activeColor);
+		repaint();
 	}
 	
 	public void switchToSemiActiveState() {
 		state = State.AUTOMATIC;
-		// TODO: set the selection to appropriate colour
+		repaint();
 	}
 
 	public void switchToStoppedState() {
 		state = State.STOPPED;
-		this.setSelectionPath(null);
-		// runningButton.setBackground(config.getDefaultColor());
+		repaint();
 	}
 
 	public void minimiseOrHide() {
-		if (config.getMinimise())
-			frame.setExtendedState(Frame.ICONIFIED);
-		else
-			setVisible(false);
+		new Thread() {
+			public void run() {
+				try {Thread.sleep(300);}
+				catch (InterruptedException e) {e.printStackTrace();}
+				if (config.getMinimise())
+					frame.setExtendedState(Frame.ICONIFIED);
+				else
+					setVisible(false);
+			}
+		}.start();
 	}
 	
 	public void unminimiseOrShow() {
 		if (config.getMinimise())
 			frame.setExtendedState(Frame.NORMAL);
 		else
-			setVisible(true);		
+			setVisible(true);
 	}
 
 	public void displayProblem(Exception e) {

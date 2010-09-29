@@ -1,8 +1,7 @@
 package timelog;
 
 import java.awt.Color;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 class Config {
