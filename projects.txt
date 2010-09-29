@@ -2,9 +2,13 @@
 # You are free to comment out or delete any line that does not apply to you.
 
 # Syntax:
-# main_project[{tooltip}] [: sub_project[{tooltip}] (, sub_project[{tooltip}])*]
+# main_project[{tooltip}]
+# 	sub_project[{tooltip}]
+# 		sub_sub_project[{tooltip}]
 
-COW{Cowley release} : CA-5555{A specific ticket I care about}, CA-5644
+COW{Cowley release}
+	CA-5555{A specific ticket I care about}
+		CA-5644
 BOS{Boston release}
 CI5{Common criteria certification}
 TDP{Technical development}

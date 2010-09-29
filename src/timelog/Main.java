@@ -13,6 +13,8 @@ import java.awt.event.WindowAdapter;
 import javax.swing.*;
 import javax.swing.Timer;
 
+import timelog.ProjectTree.Project;
+
 @SuppressWarnings("serial")
 public class Main extends JFrame {
 	private final String newline = System.getProperty("line.separator");
@@ -22,7 +24,7 @@ public class Main extends JFrame {
 	private final String projectsFilename, logFilename;
 	private final Color defaultColor, activeColor, semiActiveColor;
 	private final boolean minimise;
-	private final Map<String, String> projects;
+	private final ProjectTree projects;
 	private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 	private enum State {STOPPED, RUNNING, AUTOMATIC}
@@ -49,9 +51,10 @@ public class Main extends JFrame {
 		// loading projects + GUI
 		getContentPane().setLayout(new GridLayout(0, 1));
 		projectsFilename = get("projectsFilename", "projects.txt");
-		projects = loadProjectNames();
-		for (String project : projects.keySet())
-			addButton(project, projects.get(project));
+		projects = loadProject();
+		//addTree();
+//		for (String project : projects.keySet())
+//			addButton(project, projects.get(project));
 		addStopButton();
 		pack();
 		setAlwaysOnTop(true);
@@ -83,35 +86,34 @@ public class Main extends JFrame {
 		return new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
 	}
 
-	private Map<String, String> loadProjectNames() throws IOException {
-		Map<String, String> result = new LinkedHashMap<String, String>();
+	private ProjectTree loadProject() throws IOException {
+		ProjectTree projectTree = new ProjectTree();
+		List<Project> projectChain = new ArrayList<Project>();
 		BufferedReader br = new BufferedReader(new FileReader(projectsFilename));
 		String line;
 		while ((line = br.readLine()) != null) {
-			line = line.trim();
+			// pre-processing and comments
 			int hash = line.indexOf('#');
 			if (hash != -1)
-				line = line.substring(0, hash).trim();
-			if (line.isEmpty()) continue;
-			int colon = line.indexOf(':');
-			if (colon == -1)
-				result.put(line, null);
-			else {
-				String project = line.substring(0, colon);
-				result.put(project, null);
-				for (String subProject : line.substring(colon + 1).trim().split(","))
-					if (!subProject.trim().isEmpty())
-						result.put(subProject.trim(), project);
-			}
+				line = line.substring(0, hash);
+			if (line.trim().isEmpty()) continue;
+			// processing
+			int depth = 0;
+			while (line.charAt(depth) == '\t') depth++; // compute the depth of the new element
+			line = line.substring(depth);
+			while (depth < projectChain.size()) projectChain.remove(depth); // remove irrelevant part of the chain
+			Project p = projectTree.new Project(extractName(line), extractTooltip(line));
+			if (depth == 0) projectTree.addProject(p);
+			else projectChain.get(depth - 1).addSubProject(p);
 		}
 		br.close();
-		return result;
+		return projectTree;
 	}
 
 	private void addButton(String projectWTT, String superProjectWTT) {
 		// caption
-		final String project = removeTooltip(projectWTT);
-		final String superProject = removeTooltip(superProjectWTT);
+		final String project = extractName(projectWTT);
+		final String superProject = extractName(superProjectWTT);
 		String caption = (superProject == null ? "" : "> ") + project;
 		final JButton b = new JButton(caption);
 		// tooltip preprocessing
@@ -138,7 +140,7 @@ public class Main extends JFrame {
 		add(b);
 	}
 
-	private String removeTooltip(String s) {
+	private String extractName(String s) {
 		if (s == null) return null;
 		int left = s.indexOf('{');
 		if (left == -1) return s;
