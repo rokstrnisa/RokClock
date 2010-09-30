@@ -1,14 +1,10 @@
-TIME LOG
-========
+# TIME LOG #
 
-1. Purpose
-----------
+## 1 Purpose ##
 This program helps you keep a log of how much time you spend on specific
 projects.
 
-2. Approach
------------
-
+## 2 Approach ##
 The program displays a small window with a tree of projects and sub-projects at
 regular intervals. Each root node should correspond to a specific project that
 [your supervisors want] you want to track. You can create any number of
@@ -31,14 +27,13 @@ each node clicked. The order used is:
 
     <start-time>,<end-time>,<main-project>,<sub-project>,<sub-sub-project>,...
 
-The times are currently displayed using the date format "dd/MM/yyyy HH:mm:ss".
+The times are currently displayed using the date format `"dd/MM/yyyy HH:mm:ss"`.
 
-2. Compilation (if not already compiled)
-----------------------------------------
+## 3 Compilation (if not already compiled) ##
 Software required:
 
-- JDK 6 (aptitude package: openjdk-6-jdk),
-- Ant (aptitude package: ant).
+- JDK 6 (aptitude package: `openjdk-6-jdk`),
+- Ant (aptitude package: `ant`).
 
 The program can be compiled with
 
@@ -47,16 +42,14 @@ The program can be compiled with
 Since the program is written in Java, it should compile and run on many
 platforms.
 
-3. Setting up the program
--------------------------
-The configuration for the program is located in the "config.txt" file. In there,
-you can specify various options including the time interval in seconds (default:
-intervalInSeconds=3600), the file containing the project and sub-project names
-(default: projectsFilename=projects.txt), and the output file for the log
-entries (default: logFilename=log.txt).
+## 4 Setting up the program ##
+The configuration for the program is located in the `"config.txt"` file. In
+there, you can specify various options including the time interval in seconds
+(default: `intervalInSeconds=3600`), the file containing the project and
+sub-project names (default: `projectsFilename=projects.txt`), and the output
+file for the log entries (default: `logFilename=log.txt`).
 
-3.1 Specifying the projects
----------------------------
+### 4.1 Specifying the projects ###
 The projects are specified in the projects file (defined within the
 configuration file). The syntax for specifying projects is:
 
@@ -66,28 +59,25 @@ configuration file). The syntax for specifying projects is:
 
 The top-level projects should be your main projects (projects that project
 administration care about). Each name can have its tooltip appended in curly
-brackets. See projects.txt (the default projects file) for an example.
+brackets. See `"projects.txt"` (the default projects file) for an example.
 
-3.2 Alternative behaviour
--------------------------
+### 4.2 Alternative behaviour ###
 Some window managers do not support minimisation of windows (default:
-behaviour=minimise). In that case, specifying "behaviour=hide" in the
-"config.txt" file will instead completely hide the window. However, this does
+`behaviour=minimise`). In that case, specifying `"behaviour=hide"` in the
+`"config.txt"` file will instead completely hide the window. However, this does
 make it more difficult to show the window again before the end of the specified
 interval (e.g. to stop/change the logging). In this case, you might want to use
 the non-daemon mode to run the program (see below).
 
-4. Running the program
-----------------------
+## 5 Running the program ##
 The program can be run either by compiling the source code yourself, or by
 running a JAR (a pre-compiled package).
 
-4.1 If source is available
---------------------------
+### 5.1 If source is available ###
 Software required:
 
-- JRE 6 (aptitude package: openjdk-6-jre),
-- Ant (aptitude package: ant).
+- JRE 6 (aptitude package: `openjdk-6-jre`),
+- Ant (aptitude package: `ant`).
 
 The program can be run with
 
@@ -97,44 +87,40 @@ or just
 
     ant
 
-since "run" the the default target. Both of these options also compile the
+since `"run"` the the default target. Both of these options also compile the
 program if required.
 
 You can run the program in non-daemon mode using
 
     ant no-daemon
 
-This will block ant while the program runs, so you can close it with CTRL-C.
+This will block ant while the program runs, so you can close it with `CTRL-C`.
 
-4.2 If a pre-compiled package is available
-------------------------------------------
+### 5.2 If a pre-compiled package is available ###
 Software required:
 
-- JRE 6 (aptitude package: openjdk-6-jre).
+- JRE 6 (aptitude package: `openjdk-6-jre`).
 
 On Windows, run
 
-  ./run.bat
+    ./run.bat
 
 On Linux, run
 
-  ./run.sh
+    ./run.sh
 
 The two scripts are identical, and contain a single command
 
-  java -jar TimeLog.jar
+    java -jar TimeLog.jar
 
-5. Analysing the logs
----------------------
+## 6 Analysing the logs ##
 The logs can be analysed either using a spreadsheet, or with the provided
 analyser.
 
-5.1 Using a spreadsheet
-----------------------
-The following instructions work for Excel 2007.
+### 6.1 Using a spreadsheet ###
+The following instructions work for _Excel 2007_.
 
-5.1.1 Importing
----------------
+#### 6.1.1 Importing ####
 - open a spreadsheet;
 - select the "Data" tab;
 - choose "Get External Data";
@@ -146,28 +132,26 @@ The following instructions work for Excel 2007.
 - select "General" 'Column data format';
 - select where to place the data.
 
-5.1.2 Calculating the time periods
-----------------------------------
+#### 6.1.2 Calculating the time periods ####
 - select the date cells;
 - right click;
 - choose "Format cells...";
 - select the "Number" tab;
 - choose the "Custom" category;
-- type in "dd/mm/yyyy hh:mm:ss" for Type;
+- type in `"dd/mm/yyyy hh:mm:ss"` for Type;
 - click OK;
 - select cell to calculate difference in, e.g. A1 and A2;
-- type "=A2-A1";
+- type `"=A2-A1"`;
 - select the cell;
 - right click;
 - choose "Format cells...";
 - choose the "Custom" category;
-- type "hh:mm:ss" for Type;
+- type `"hh:mm:ss"` for Type;
 - click OK.
 
-5.2 Using the provided log analyser
------------------------------------
+### 6.2 Using the provided log analyser ###
 The source code and the pre-compiled JAR both contain the class
-"timelog.Analyser". If you have a pre-compiled JAR available, you can start it
+`"timelog.Analyser"`. If you have a pre-compiled JAR available, you can start it
 with
 
     java -cp TimeLog.jar timelog.Analyser <logFilename>
@@ -177,8 +161,7 @@ If you have the source code available, you can start it with
     ant compile
     java -cp bin timelog.Analyser <logFilename>
 
-6. Feedback
------------
+## 7 Feedback ##
 All feedback is much appreciated. Please send it to:
 [Rok Strnisa](mailto:rok.strnisa@citrix.com "rok.strnisa@citrix.com")
 
