@@ -33,8 +33,8 @@ each node clicked. The order used is:
 
 The times are currently displayed using the date format "dd/MM/yyyy HH:mm:ss".
 
-2. Compilation
---------------
+2. Compilation (if not already compiled)
+----------------------------------------
 Software required:
 
 - JDK 6 (aptitude package: openjdk-6-jdk),
@@ -57,7 +57,6 @@ entries (default: logFilename=log.txt).
 
 3.1 Specifying the projects
 ---------------------------
-
 The projects are specified in the projects file (defined within the
 configuration file). The syntax for specifying projects is:
 
@@ -80,6 +79,9 @@ the non-daemon mode to run the program (see below).
 
 4. Running the program
 ----------------------
+
+4.1 If source is available
+--------------------------
 Software required:
 
 - JRE 6 (aptitude package: openjdk-6-jre),
@@ -102,12 +104,33 @@ You can run the program in non-daemon mode using
 
 This will block ant while the program runs, so you can close it with CTRL-C.
 
-5. Using a spreadsheet
+4.2 If a pre-compiled package is available
+------------------------------------------
+Software required:
+
+- JRE 6 (aptitude package: openjdk-6-jre).
+
+On Windows, run
+
+  ./run.bat
+
+On Linux, run
+
+  ./run.sh
+
+The two scripts are identical, and contain a single command
+
+  java -jar TimeLog.jar
+
+5. Analysing the logs
+---------------------
+
+5.1 Using a spreadsheet
 ----------------------
 The following instructions work for Excel 2007.
 
-5.1 Importing
--------------
+5.1.1 Importing
+---------------
 - open a spreadsheet;
 - select the "Data" tab;
 - choose "Get External Data";
@@ -119,8 +142,8 @@ The following instructions work for Excel 2007.
 - select "General" 'Column data format';
 - select where to place the data.
 
-5.2 Calculating the time periods
---------------------------------
+5.1.2 Calculating the time periods
+----------------------------------
 - select the date cells;
 - right click;
 - choose "Format cells...";
@@ -136,6 +159,19 @@ The following instructions work for Excel 2007.
 - choose the "Custom" category;
 - type "hh:mm:ss" for Type;
 - click OK.
+
+5.2 Using the provided log analyser
+-----------------------------------
+The source code and the pre-compiled JAR both contain the class
+"timelog.Analyser". If you have a pre-compiled JAR available, you can start it
+with
+
+    java -cp TimeLog.jar timelog.Analyser <logFilename>
+
+If you have the source code available, you can start it with
+
+    ant compile
+    java -cp bin timelog.Analyser <logFilename>
 
 6. Feedback
 -----------

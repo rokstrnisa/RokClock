@@ -2,13 +2,11 @@ package timelog;
 
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class Main extends JFrame {
-	private final String configFilename = "config.txt";
-	private final Config config = new Config(configFilename);
+	private final Config config = new Config();
 	private final ProjectsTree projectsTree;
 
 	private Main() throws Exception {

@@ -53,7 +53,7 @@
 				<file name="${projects.file}" />
 			</filelist>
 			<fileset file="${dist.dir}/run.*" />
-			<fileset file="${dist.dir}/README.txt" />
+			<fileset file="README.markdown" />
 		</copy>
 		<chmod file="${contents.dir}/run.*" perm="+x" />
 		<zip destfile="${zip.file}" basedir="${contents.dir}" />

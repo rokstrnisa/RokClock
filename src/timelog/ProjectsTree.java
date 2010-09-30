@@ -3,7 +3,7 @@ package timelog;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.text.*;
+import java.text.DateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -14,30 +14,29 @@ import javax.swing.tree.*;
 @SuppressWarnings("serial")
 class ProjectsTree extends JTree implements TimeLog {
 	class ProjectNode extends DefaultMutableTreeNode {
-		  private String tooltip;
+		private String tooltip;
 
-		  public ProjectNode(String caption, String tooltip) {
-		    super(caption);
-		    this.tooltip = tooltip;
-		  }
+		public ProjectNode(String caption, String tooltip) {
+			super(caption);
+			this.tooltip = tooltip;
+		}
 
-		  public String getTooltip() {
-		    return tooltip;
-		  }
+		public String getTooltip() {
+			return tooltip;
+		}
 	}
-	
+
 	private final String nl = System.getProperty("line.separator");
-	private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-	
+	private final DateFormat df = Config.df;
+
 	private final Frame frame;
 	private final Config config;
 	private final DefaultMutableTreeNode root;
 	private final DefaultTreeModel model;
 	private PopupMenu popupMenu;
 	private TreePath lastRightClickedPath;
-	
 	private String[] currentPojectPath = null;
-	
+
 	enum State {STOPPED, RUNNING, AUTOMATIC}
 	private State state = State.STOPPED;
 
@@ -69,14 +68,14 @@ class ProjectsTree extends JTree implements TimeLog {
 		ToolTipManager.sharedInstance().registerComponent(this);
 		frame.add(createPopupMenu());
 	}
-	
+
 	public String getToolTipText(MouseEvent e) {
 		if (getRowForLocation(e.getX(), e.getY()) == -1)
 			return null;
 		TreePath path = getPathForLocation(e.getX(), e.getY());
 		return ((ProjectNode) path.getLastPathComponent()).getTooltip();
 	}
-	
+
 	private PopupMenu createPopupMenu() {
 		popupMenu = new PopupMenu();
 		MenuItem deleteMI = new MenuItem("Delete");
@@ -97,9 +96,9 @@ class ProjectsTree extends JTree implements TimeLog {
 		});
 		popupMenu.add(deleteMI);
 		popupMenu.add(addChildMI);
-		return popupMenu;	
+		return popupMenu;
 	}
-	
+
 	void addChildNodeTo(DefaultMutableTreeNode parent, String project, String tooltip) {
 		ProjectNode child = new ProjectNode(project, tooltip);
 		parent.add(child);
@@ -108,7 +107,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		try {saveProjects();}
 		catch (IOException e) {displayProblem(e);}
 	}
-	
+
 	private void loadProjects() throws IOException {
 		List<DefaultMutableTreeNode> nodeChain = new ArrayList<DefaultMutableTreeNode>();
 		nodeChain.add(root);
@@ -133,7 +132,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		}
 		br.close();
 	}
-	
+
 	private void saveProjects() throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("# For main projects, you should only use the approved 3-letter acronyms." + nl);
@@ -145,7 +144,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		bw.write(sb.toString());
 		bw.close();
 	}
-	
+
 	private void saveChildrenOf(StringBuilder sb, TreeNode parent, int depth) {
 		final int childCount = parent.getChildCount();
 		for (int i = 0; i < childCount; i++) {
@@ -159,14 +158,14 @@ class ProjectsTree extends JTree implements TimeLog {
 			saveChildrenOf(sb, child, depth + 1);
 		}
 	}
-	
+
 	private String extractName(String s) {
 		if (s == null) return null;
 		int left = s.indexOf('{');
 		if (left == -1) return s;
 		return s.substring(0, left).trim();
 	}
-	
+
 	private String extractTooltip(String s) {
 		if (s == null) return null;
 		int left = s.indexOf('{');
@@ -174,7 +173,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		if (left == -1 || right == -1) return null;
 		return s.substring(left + 1, right).trim();
 	}
-	
+
 	private Timer createTimer() {
 		Timer t = new Timer(config.getIntervalInSeconds() * 1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -183,12 +182,12 @@ class ProjectsTree extends JTree implements TimeLog {
 		});
 		return t;
 	}
-	
+
 	private void expandAllNodes() {
 		for (int i = 0; i < getRowCount(); i++)
 			expandRow(i);
 	}
-	
+
 	private TreeCellRenderer getTreeCellRenderer() {
 		return new DefaultTreeCellRenderer() {
 			public Color getBackgroundNonSelectionColor() {
@@ -214,7 +213,7 @@ class ProjectsTree extends JTree implements TimeLog {
 			}
 		};
 	}
-	
+
 	private void onLeftMouseClick() {
 		ProjectNode node = (ProjectNode) getLastSelectedPathComponent();
 		if (node == null)
@@ -231,7 +230,7 @@ class ProjectsTree extends JTree implements TimeLog {
 			timer.restart();
 		} catch (Exception ex) {displayProblem(ex);}
 	}
-	
+
 	private void onMiddleMouseClick(MouseEvent e) {
 		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
 		ProjectNode node = (ProjectNode) lastRightClickedPath.getLastPathComponent();
@@ -239,7 +238,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		if (isExpanded(path)) collapsePath(path);
 		else expandPath(path);
 	}
-	
+
 	private void onRightMouseClick(MouseEvent e) {
 		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
 		popupMenu.show(frame, e.getX(), e.getY());
@@ -264,7 +263,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		}
 		switchToStoppedState();
 	}
-	
+
 	public void doPeriodicAction() {
 		try {
 			if (state == State.AUTOMATIC) {
@@ -277,7 +276,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		} catch (Exception ex) {displayProblem(ex);}
 		unminimiseOrShow();
 	}
-	
+
 	public void writeLogEntry(long startTime, long endTime) throws Exception {
 		String startTimeS = df.format(new Date(startTime));
 		String endTimeS = df.format(new Date(endTime));
@@ -289,7 +288,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		out.write(entry + nl);
 		out.close();
 	}
-	
+
 	private Color getCurrentSelectionColor() {
 		switch (state) {
 			case AUTOMATIC: return config.getSemiActiveColor();
@@ -298,12 +297,12 @@ class ProjectsTree extends JTree implements TimeLog {
 			default: return config.getDefaultColor();
 		}
 	}
-	
+
 	public void switchToActiveState(String[] projectPath) {
 		state = State.RUNNING;
 		repaint();
 	}
-	
+
 	public void switchToSemiActiveState() {
 		state = State.AUTOMATIC;
 		repaint();
@@ -326,7 +325,7 @@ class ProjectsTree extends JTree implements TimeLog {
 			}
 		}.start();
 	}
-	
+
 	public void unminimiseOrShow() {
 		if (config.getMinimise())
 			frame.setExtendedState(Frame.NORMAL);
