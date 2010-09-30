@@ -13,7 +13,8 @@ The program displays a small window with a tree of projects and sub-projects at
 regular intervals. Each root node should correspond to a specific project that
 [your supervisors want] you want to track. You can create any number of
 sub-projects by either editing the project file (see section 3.1) and reloading
-the program, or right-clicking a node in the user interface.
+the program, or right-clicking a node in the user interface. Use middle-click to
+expand/collapse a parent node.
 
 Once a node is pressed (left click), the window is minimised (or disappears,
 depending on the configuration). The window re-appears at the specified interval
