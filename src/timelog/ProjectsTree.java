@@ -283,7 +283,6 @@ class ProjectsTree extends JTree implements TimeLog {
 		String entry = startTimeS + "," + endTimeS;
 		for (String projectPathNode : currentPojectPath)
 			entry += "," + projectPathNode;
-		System.err.println(entry);
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(config.getLogFilename(), true)));
 		out.write(entry + nl);
 		out.close();
