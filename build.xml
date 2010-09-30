@@ -30,7 +30,7 @@
 			fork="true" spawn="true" />
 	</target>
 
-	<target name="no-daemon">
+	<target name="no-daemon" depends="compile">
 		<exec executable="java">
 			<arg value="-cp"/>
 			<arg value="${bin.dir}"/>
