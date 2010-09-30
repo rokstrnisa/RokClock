@@ -27,7 +27,7 @@ each node clicked. The order used is:
 
     <start-time>,<end-time>,<main-project>,<sub-project>,<sub-sub-project>,...
 
-The times are currently displayed using the date format `"dd/MM/yyyy HH:mm:ss"`.
+The times are currently displayed using the date format `dd/MM/yyyy HH:mm:ss`.
 
 ## 3 Compilation (if not already compiled) ##
 Software required:
@@ -43,11 +43,11 @@ Since the program is written in Java, it should compile and run on many
 platforms.
 
 ## 4 Setting up the program ##
-The configuration for the program is located in the `"config.txt"` file. In
-there, you can specify various options including the time interval in seconds
-(default: `intervalInSeconds=3600`), the file containing the project and
-sub-project names (default: `projectsFilename=projects.txt`), and the output
-file for the log entries (default: `logFilename=log.txt`).
+The configuration for the program is located in the `config.txt` file. In there,
+you can specify various options including the time interval in seconds (default:
+`intervalInSeconds=3600`), the file containing the project and sub-project names
+(default: `projectsFilename=projects.txt`), and the output file for the log
+entries (default: `logFilename=log.txt`).
 
 ### 4.1 Specifying the projects ###
 The projects are specified in the projects file (defined within the
@@ -59,12 +59,12 @@ configuration file). The syntax for specifying projects is:
 
 The top-level projects should be your main projects (projects that project
 administration care about). Each name can have its tooltip appended in curly
-brackets. See `"projects.txt"` (the default projects file) for an example.
+brackets. See `projects.txt` (the default projects file) for an example.
 
 ### 4.2 Alternative behaviour ###
 Some window managers do not support minimisation of windows (default:
-`behaviour=minimise`). In that case, specifying `"behaviour=hide"` in the
-`"config.txt"` file will instead completely hide the window. However, this does
+`behaviour=minimise`). In that case, specifying `behaviour=hide` in the
+`config.txt` file will instead completely hide the window. However, this does
 make it more difficult to show the window again before the end of the specified
 interval (e.g. to stop/change the logging). In this case, you might want to use
 the non-daemon mode to run the program (see below).
@@ -87,7 +87,7 @@ or just
 
     ant
 
-since `"run"` the the default target. Both of these options also compile the
+since `run` the the default target. Both of these options also compile the
 program if required.
 
 You can run the program in non-daemon mode using
@@ -138,20 +138,20 @@ The following instructions work for _Excel 2007_.
 - choose "Format cells...";
 - select the "Number" tab;
 - choose the "Custom" category;
-- type in `"dd/mm/yyyy hh:mm:ss"` for Type;
+- type in `dd/mm/yyyy hh:mm:ss` for Type;
 - click OK;
 - select cell to calculate difference in, e.g. A1 and A2;
-- type `"=A2-A1"`;
+- type `=A2-A1`;
 - select the cell;
 - right click;
 - choose "Format cells...";
 - choose the "Custom" category;
-- type `"hh:mm:ss"` for Type;
+- type `hh:mm:ss` for Type;
 - click OK.
 
 ### 6.2 Using the provided log analyser ###
 The source code and the pre-compiled JAR both contain the class
-`"timelog.Analyser"`. If you have a pre-compiled JAR available, you can start it
+`timelog.Analyser`. If you have a pre-compiled JAR available, you can start it
 with
 
     java -cp TimeLog.jar timelog.Analyser <logFilename>
