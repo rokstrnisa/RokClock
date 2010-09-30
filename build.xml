@@ -8,6 +8,7 @@
 	<property name="contents.dir" value="${dist.dir}/TimeLog" />
 	<property name="jar.file" value="${contents.dir}/TimeLog.jar" />
 	<property name="zip.file" value="${dist.dir}/TimeLog.zip" />
+	<property name="readme.file" value="README.markdown" />
 
 	<target name="clean-dist">
 		<delete dir="${contents.dir}" />
@@ -53,7 +54,7 @@
 				<file name="${projects.file}" />
 			</filelist>
 			<fileset file="${dist.dir}/run.*" />
-			<fileset file="README.markdown" />
+			<fileset file="${readme.file}" />
 		</copy>
 		<chmod file="${contents.dir}/run.*" perm="+x" />
 		<zip destfile="${zip.file}" basedir="${contents.dir}" />
