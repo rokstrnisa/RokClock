@@ -16,24 +16,27 @@ public class Main extends JFrame {
 		// basic settings
 		setTitle(config.getTitle());
 		setLocation(config.getLocX(), config.getLocY());
+		setSize(config.getWidth(), config.getHeight());
 		setBackground(Color.BLACK);
 		// loading projects + GUI
 		projectsTree = new ProjectsTree(this, config);
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
 		getContentPane().setLayout(layout);
-//		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridx = constraints.gridy = 0;
-		constraints.weightx = constraints.weighty = 0.5;
+		constraints.weightx = 0.5;
+		constraints.weighty = 1;
 		constraints.fill = GridBagConstraints.BOTH;
-//		constraints.anchor = GridBagConstraints.NORTHWEST;
-		layout.setConstraints(projectsTree, constraints);
-		getContentPane().add(projectsTree);
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.add(projectsTree);
+		layout.setConstraints(scrollPane, constraints);
+		getContentPane().add(scrollPane);
 		JButton stopButton = createStopButton();
 		constraints.gridy = 1;
+		constraints.weighty = 0;
 		layout.setConstraints(stopButton, constraints);
 		getContentPane().add(stopButton);
-		pack();
+		// pack();
 		setAlwaysOnTop(true);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent ev) {

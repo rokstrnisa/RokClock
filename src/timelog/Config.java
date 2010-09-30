@@ -39,6 +39,14 @@ class Config {
 		return get("locY", 400);
 	}
 	
+	int getWidth() {
+		return get("width", 150);
+	}
+	
+	int getHeight() {
+		return get("height", 400);
+	}
+	
 	Color getDefaultColor() {
 		return get("defaultColor", Color.GREEN);
 	}

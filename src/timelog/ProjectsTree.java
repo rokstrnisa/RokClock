@@ -26,12 +26,13 @@ class ProjectsTree extends JTree implements TimeLog {
 		  }
 	}
 	
-	private final String newline = System.getProperty("line.separator");
+	private final String nl = System.getProperty("line.separator");
 	private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
 	private final Frame frame;
 	private final Config config;
 	private final DefaultMutableTreeNode root;
+	private final DefaultTreeModel model;
 	private PopupMenu popupMenu;
 	private TreePath lastRightClickedPath;
 	
@@ -48,7 +49,8 @@ class ProjectsTree extends JTree implements TimeLog {
 		this.frame = frame;
 		this.config = config;
 		root = (DefaultMutableTreeNode) getModel().getRoot();
-		loadProjects(root);
+		model = (DefaultTreeModel) getModel();
+		loadProjects();
 		expandAllNodes();
 		setRootVisible(false);
 		setBackground(config.getDefaultColor());
@@ -58,9 +60,10 @@ class ProjectsTree extends JTree implements TimeLog {
 			public void mouseClicked(MouseEvent e) {
 				switch (e.getButton()) {
 					case MouseEvent.BUTTON1: onLeftMouseClick(); break;
+					case MouseEvent.BUTTON2: onMiddleMouseClick(e); break;
 					case MouseEvent.BUTTON3: onRightMouseClick(e); break;
 				}
-			}			
+			}
 		});
 		timer = createTimer();
 		ToolTipManager.sharedInstance().registerComponent(this);
@@ -79,22 +82,34 @@ class ProjectsTree extends JTree implements TimeLog {
 		MenuItem deleteMI = new MenuItem("Delete");
 		deleteMI.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				lastRightClickedPath.getLastPathComponent();
-				// TODO: delete node, save projects
-			}			
+				MutableTreeNode node = (MutableTreeNode) lastRightClickedPath.getLastPathComponent();
+				model.removeNodeFromParent(node);
+				try {saveProjects();}
+				catch (IOException ex) {displayProblem(ex);}
+			}
 		});
 		MenuItem addChildMI = new MenuItem("Add child to");
 		addChildMI.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: add child node, save projects
-			}			
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) lastRightClickedPath.getLastPathComponent();
+				new ProjectDialog(frame, ProjectsTree.this, parent).setVisible(true);
+			}
 		});
 		popupMenu.add(deleteMI);
 		popupMenu.add(addChildMI);
 		return popupMenu;	
 	}
 	
-	private void loadProjects(DefaultMutableTreeNode root) throws IOException {
+	void addChildNodeTo(DefaultMutableTreeNode parent, String project, String tooltip) {
+		ProjectNode child = new ProjectNode(project, tooltip);
+		parent.add(child);
+		model.reload();
+		expandPath(new TreePath(parent.getPath()));
+		try {saveProjects();}
+		catch (IOException e) {displayProblem(e);}
+	}
+	
+	private void loadProjects() throws IOException {
 		List<DefaultMutableTreeNode> nodeChain = new ArrayList<DefaultMutableTreeNode>();
 		nodeChain.add(root);
 		BufferedReader br = new BufferedReader(new FileReader(config.getProjectsFilename()));
@@ -117,6 +132,32 @@ class ProjectsTree extends JTree implements TimeLog {
 			nodeChain.add(node);
 		}
 		br.close();
+	}
+	
+	private void saveProjects() throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("# For main projects, you should only use the approved 3-letter acronyms." + nl);
+		sb.append("# You are free to comment out or delete any line that does not apply to you." + nl + nl);
+		sb.append("# Syntax:" + nl + "# main_project[{tooltip}]" + nl);
+		sb.append("# \tsub_project[{tooltip}]" + nl + "# \t\tsub_sub_project[{tooltip}]" + nl + nl);
+		saveChildrenOf(sb, root, 0);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(config.getProjectsFilename()));
+		bw.write(sb.toString());
+		bw.close();
+	}
+	
+	private void saveChildrenOf(StringBuilder sb, TreeNode parent, int depth) {
+		final int childCount = parent.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+			ProjectNode child = (ProjectNode) parent.getChildAt(i);
+			String projectName = child.getUserObject().toString();
+			String tooltip = child.getTooltip();
+			for (int j = 0; j < depth; j++) sb.append('\t');
+			sb.append(projectName);
+			if (!tooltip.isEmpty()) sb.append("{" + tooltip + "}");
+			sb.append(nl);
+			saveChildrenOf(sb, child, depth + 1);
+		}
 	}
 	
 	private String extractName(String s) {
@@ -175,13 +216,13 @@ class ProjectsTree extends JTree implements TimeLog {
 	}
 	
 	private void onLeftMouseClick() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) getLastSelectedPathComponent();
+		ProjectNode node = (ProjectNode) getLastSelectedPathComponent();
 		if (node == null)
 			return;
 		TreeNode[] path = node.getPath();
 		String[] projectPath = new String[path.length - 1];
 		for (int i = 1; i < path.length; i++)
-			projectPath[i-1] = ((DefaultMutableTreeNode) path[i]).getUserObject().toString();
+			projectPath[i-1] = ((ProjectNode) path[i]).getUserObject().toString();
 		try {
 			if (state == State.AUTOMATIC)
 				state = State.RUNNING;
@@ -189,6 +230,14 @@ class ProjectsTree extends JTree implements TimeLog {
 			minimiseOrHide();
 			timer.restart();
 		} catch (Exception ex) {displayProblem(ex);}
+	}
+	
+	private void onMiddleMouseClick(MouseEvent e) {
+		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
+		ProjectNode node = (ProjectNode) lastRightClickedPath.getLastPathComponent();
+		TreePath path = new TreePath(model.getPathToRoot(node));
+		if (isExpanded(path)) collapsePath(path);
+		else expandPath(path);
 	}
 	
 	private void onRightMouseClick(MouseEvent e) {
@@ -237,7 +286,7 @@ class ProjectsTree extends JTree implements TimeLog {
 			entry += "," + projectPathNode;
 		System.err.println(entry);
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(config.getLogFilename(), true)));
-		out.write(entry + newline);
+		out.write(entry + nl);
 		out.close();
 	}
 	
@@ -268,7 +317,7 @@ class ProjectsTree extends JTree implements TimeLog {
 	public void minimiseOrHide() {
 		new Thread() {
 			public void run() {
-				try {Thread.sleep(300);}
+				try {Thread.sleep(150);}
 				catch (InterruptedException e) {e.printStackTrace();}
 				if (config.getMinimise())
 					frame.setExtendedState(Frame.ICONIFIED);

@@ -32,21 +32,7 @@ each node clicked. The order used is:
 
 The times are currently displayed using the date format "dd/MM/yyyy HH:mm:ss".
 
-2. Compilation
---------------
-Software required:
-
-- JDK 6 (aptitude package: openjdk-6-jdk),
-- Ant (aptitude package: ant).
-
-The program can be compiled with
-
-    ant compile
-
-Since the program is written in Java, it should compile and run on many
-platforms.
-
-3. Setting up the program
+2. Setting up the program
 -------------------------
 The configuration for the program is located in the "config.txt" file. In there,
 you can specify various options including the time interval in seconds (default:
@@ -54,7 +40,7 @@ intervalInSeconds=3600), the file containing the project and sub-project names
 (default: projectsFilename=projects.txt), and the output file for the log
 entries (default: logFilename=log.txt).
 
-3.1 Specifying the projects
+2.1 Specifying the projects
 ---------------------------
 
 The projects are specified in the projects file (defined within the
@@ -68,7 +54,7 @@ The top-level projects should be your main projects (projects that project
 administration care about). Each name can have its tooltip appended in curly
 brackets. See projects.txt (the default projects file) for an example.
 
-3.2 Alternative behaviour
+2.2 Alternative behaviour
 -------------------------
 Some window managers do not support minimisation of windows (default:
 behaviour=minimise). In that case, specifying "behaviour=hide" in the
@@ -77,35 +63,29 @@ make it more difficult to show the window again before the end of the specified
 interval (e.g. to stop/change the logging). In this case, you might want to use
 the non-daemon mode to run the program (see below).
 
-4. Running the program
+3. Running the program
 ----------------------
 Software required:
 
-- JRE 6 (aptitude package: openjdk-6-jre),
-- Ant (aptitude package: ant).
+- JRE 6 (aptitude package: openjdk-6-jre).
 
-The program can be run with
+On Windows, run
 
-    ant run
+  ./run.bat
 
-or just
+On Linux, run
 
-    ant
+  ./run.sh
 
-since "run" the the default target. Both of these options also compile the
-program if required.
+The two scripts are identical, and contain a single command
 
-You can run the program in non-daemon mode using
+  java -jar TimeLog.jar
 
-    ant no-daemon
-
-This will block ant while the program runs, so you can close it with CTRL-C.
-
-5. Using a spreadsheet
+4. Using a spreadsheet
 ----------------------
 The following instructions work for Excel 2007.
 
-5.1 Importing
+4.1 Importing
 -------------
 - open a spreadsheet;
 - select the "Data" tab;
@@ -118,7 +98,7 @@ The following instructions work for Excel 2007.
 - select "General" 'Column data format';
 - select where to place the data.
 
-5.2 Calculating the time periods
+4.2 Calculating the time periods
 --------------------------------
 - select the date cells;
 - right click;
@@ -136,7 +116,7 @@ The following instructions work for Excel 2007.
 - type "hh:mm:ss" for Type;
 - click OK.
 
-6. Feedback
+5. Feedback
 -----------
 All feedback is much appreciated. Please send it to:
 [Rok Strnisa](mailto:rok.strnisa@citrix.com "rok.strnisa@citrix.com")
