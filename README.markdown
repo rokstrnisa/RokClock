@@ -79,6 +79,8 @@ the non-daemon mode to run the program (see below).
 
 4. Running the program
 ----------------------
+The program can be run either by compiling the source code yourself, or by
+running a JAR (a pre-compiled package).
 
 4.1 If source is available
 --------------------------
@@ -124,6 +126,8 @@ The two scripts are identical, and contain a single command
 
 5. Analysing the logs
 ---------------------
+The logs can be analysed either using a spreadsheet, or with the provided
+analyser.
 
 5.1 Using a spreadsheet
 ----------------------
