@@ -317,19 +317,30 @@ class ProjectsTree extends JTree implements TimeLog {
 			public void run() {
 				try {Thread.sleep(150);}
 				catch (InterruptedException e) {e.printStackTrace();}
-				if (config.getMinimise())
-					frame.setExtendedState(Frame.ICONIFIED);
-				else
-					setVisible(false);
+				switch (config.getBehaviour()) {
+					case MINIMISE:
+						frame.setExtendedState(Frame.ICONIFIED);
+						break;
+					case HIDE:
+						frame.setVisible(false);
+						break;
+					case SHOW:
+						break;				
+				}
 			}
 		}.start();
 	}
 
 	public void unminimiseOrShow() {
-		if (config.getMinimise())
-			frame.setExtendedState(Frame.NORMAL);
-		else
-			setVisible(true);
+		switch (config.getBehaviour()) {
+			case MINIMISE:
+				frame.setExtendedState(Frame.NORMAL);
+				break;
+			case HIDE:
+			case SHOW:
+				frame.setVisible(true);
+				break;				
+		}
 	}
 
 	public void displayProblem(Exception e) {

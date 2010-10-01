@@ -13,7 +13,6 @@ BOS{Boston release}
 CI5{Common criteria certification}
 TDP{Technical development}
 TMN{Technical management}
-REA{Research}
 LCM{Life cycle management}
 CSE{Competitive and solutions engineering}
 PTR{Consultancy and partner support}

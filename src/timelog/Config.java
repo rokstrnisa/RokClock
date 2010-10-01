@@ -9,6 +9,8 @@ class Config {
 	static final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private final String configFilename = "config.txt";
 	private final Properties properties = new Properties();
+	
+	enum Behaviour {MINIMISE, HIDE, SHOW}
 
 	Config() throws IOException {
 		properties.load(new FileInputStream(configFilename));
@@ -25,9 +27,15 @@ class Config {
 	int getIntervalInSeconds() {
 		return get("intervalInSeconds", 3600);
 	}
-
-	boolean getMinimise() {
-		return get("behaviour", "minimise").equals("minimise");
+	
+	Behaviour getBehaviour() {
+		String behaviourS = get("behaviour", "minimise").toUpperCase();
+		Behaviour b = Behaviour.MINIMISE;
+		try {b = Behaviour.valueOf(Behaviour.class, behaviourS);}
+		catch (IllegalArgumentException e) {
+			System.err.println("Could not recognise the specified behaviour: " + properties.getProperty("behaviour"));
+		}
+		return b;
 	}
 
 	String getTitle() {
