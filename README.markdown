@@ -12,15 +12,15 @@ sub-projects by either editing the project file (see section 3.1) and reloading
 the program, or right-clicking a node in the user interface. Use middle-click to
 expand/collapse a parent node.
 
-Once a node is pressed (left click), the window is minimised (or disappears,
-depending on the configuration). The window re-appears at the specified interval
-is a semi-active state (default colour: blue). If a node is pressed (left click)
-within another the specified interval, the time elapsed since the window
-appeared will be counted towards the previous entry.
+Once a node is pressed (left click), the window is minimised (alternative
+behaviour is possible --- see below). The window re-appears at the specified
+interval in a semi-active state (default colour: blue). If a node is pressed
+(left click) within another specified interval, the time elapsed since the
+window appeared will be counted towards the previous entry.
 
 If the task should be stopped or changed before the end of the interval, you can
-maximise the program, and click on the STOP button or a different task,
-respectively.
+maximise the program (if minimised), and click on the STOP button or a different
+task, respectively.
 
 The program generates a simple CSV log, where each entry roughly corresponds to
 each node clicked. The order used is:
@@ -50,8 +50,8 @@ you can specify various options including the time interval in seconds (default:
 entries (default: `logFilename=log.txt`).
 
 ### 4.1 Specifying the projects ###
-The projects are specified in the projects file (defined within the
-configuration file). The syntax for specifying projects is:
+The projects are specified in the projects file (its path is specified within
+the configuration file). The syntax for specifying projects is:
 
     main_project[{tooltip}]
     				sub_project[{tooltip}]
@@ -61,13 +61,18 @@ The top-level projects should be your main projects (projects that project
 administration care about). Each name can have its tooltip appended in curly
 brackets. See `projects.txt` (the default projects file) for an example.
 
-### 4.2 Alternative behaviour ###
-Some window managers do not support minimisation of windows (default:
-`behaviour=minimise`). In that case, specifying `behaviour=hide` in the
-`config.txt` file will instead completely hide the window. However, this does
-make it more difficult to show the window again before the end of the specified
-interval (e.g. to stop/change the logging). In this case, you might want to use
-the non-daemon mode to run the program (see below).
+### 4.2 Alternative behaviours ###
+By default, the program will minimise itself once a project has been selected.
+
+Some window managers do not support minimisation of windows. In that case,
+specifying `behaviour=hide` in the `config.txt` file will instead completely
+hide the window. However, this does make it more difficult to show the window
+again before the end of the specified interval (e.g. to stop/change the
+logging). In this case, you might want to use the non-daemon mode to run the
+program (see below), which makes it easy to close it.
+
+A third option is to not change the window state at all. This can be done by
+specifying `behaviour=show` in the `config.txt` file.
 
 ## 5 Running the program ##
 The program can be run either by compiling the source code yourself, or by

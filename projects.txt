@@ -21,7 +21,7 @@ RQA{Roadmap and requirements analysis}
 TRG{Training and learning}
 GMN{General management}
 PMN{Project management}
-PLM{Personnel management}
+PLM{Personal management}
 PRI{Production infrastructure}
 OTH{Other}
 HOL{Holidays}
