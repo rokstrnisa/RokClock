@@ -28,6 +28,10 @@ class Config {
 		return get("intervalInSeconds", 3600);
 	}
 	
+	int getWaitInSeconds() {
+		return get("waitInSeconds", 3600);
+	}
+	
 	Behaviour getBehaviour() {
 		String behaviourS = get("behaviour", "minimise").toUpperCase();
 		Behaviour b = Behaviour.MINIMISE;

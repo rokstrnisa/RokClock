@@ -14,9 +14,10 @@ expand/collapse a parent node.
 
 Once a node is pressed (left click), the window is minimised (alternative
 behaviour is possible --- see below). The window re-appears at the specified
-interval in a semi-active state (default colour: blue). If a node is pressed
-(left click) within another specified interval, the time elapsed since the
-window appeared will be counted towards the previous entry.
+interval (`intervalInSeconds`) in a semi-active state (default colour: blue). If
+a node is pressed (left click) within another specified interval
+(`waitInSeconds`), the time elapsed since the window appeared will be counted
+towards the previous entry.
 
 If the task should be stopped or changed before the end of the interval, you can
 maximise the program (if minimised), and click on the STOP button or a different

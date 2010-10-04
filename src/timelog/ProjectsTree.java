@@ -271,11 +271,19 @@ class ProjectsTree extends JTree implements TimeLog {
 	}
 
 	public void switchToActiveState(String[] projectPath) {
+		int delay = config.getIntervalInSeconds() * 1000;
+		timer.setDelay(delay);
+		timer.setInitialDelay(delay);
+		timer.restart();		
 		state = State.RUNNING;
 		repaint();
 	}
 
 	public void switchToSemiActiveState() {
+		int delay = config.getWaitInSeconds() * 1000;
+		timer.setDelay(delay);
+		timer.setInitialDelay(delay);
+		timer.restart();
 		state = State.AUTOMATIC;
 		repaint();
 	}
