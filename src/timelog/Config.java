@@ -10,6 +10,7 @@ class Config {
 	private final String configFilename = "config.txt";
 	private final Properties properties = new Properties();
 	
+	enum AutoCountTowards {PREVIOUS, UNKNOWN, NOTHING}
 	enum Behaviour {MINIMISE, HIDE, SHOW}
 
 	Config() throws IOException {
@@ -31,15 +32,13 @@ class Config {
 	int getWaitInSeconds() {
 		return get("waitInSeconds", 3600);
 	}
-	
+
+	AutoCountTowards getAutoCountTowards() {
+		return get(AutoCountTowards.class, AutoCountTowards.PREVIOUS);
+	}
+
 	Behaviour getBehaviour() {
-		String behaviourS = get("behaviour", "minimise").toUpperCase();
-		Behaviour b = Behaviour.MINIMISE;
-		try {b = Behaviour.valueOf(Behaviour.class, behaviourS);}
-		catch (IllegalArgumentException e) {
-			System.err.println("Could not recognise the specified behaviour: " + properties.getProperty("behaviour"));
-		}
-		return b;
+		return get(Behaviour.class, Behaviour.MINIMISE);
 	}
 
 	String getTitle() {
@@ -90,5 +89,20 @@ class Config {
 		String[] rgb = v.split(",");
 		return new Color(Integer.parseInt(rgb[0]),
 			Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+	}
+
+	<T extends Enum<T>> T get(Class<T> c, T defaultValue) {
+		String propertyName = c.getSimpleName();
+		propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
+		String defaultValueS = defaultValue.toString().toLowerCase();
+		String value = get(propertyName, defaultValueS).toUpperCase();
+		T result = defaultValue;
+		try {result = Enum.valueOf(c, value);}
+		catch (IllegalArgumentException e) {
+			System.err.println("Could not recognise the specified option for '"
+					+ propertyName + "': "
+					+ properties.getProperty("behaviour"));
+		}
+		return result;
 	}
 }

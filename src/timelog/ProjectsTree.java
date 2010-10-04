@@ -206,8 +206,8 @@ class ProjectsTree extends JTree implements TimeLog {
 		for (int i = 1; i < path.getPathCount(); i++)
 			projectPath[i-1] = ((ProjectNode) path.getPathComponent(i)).getUserObject().toString();
 		try {
-			if (state == State.AUTOMATIC)
-				state = State.RUNNING;
+//			if (state == State.AUTOMATIC)
+//				state = State.RUNNING;
 			startRecording(projectPath);
 			minimiseOrHide();
 			timer.restart();
@@ -239,6 +239,7 @@ class ProjectsTree extends JTree implements TimeLog {
 				return;
 			case AUTOMATIC:
 				timer.stop();
+				stopAutomaticRecording();
 				break;
 			case RUNNING:
 				writeLogEntry(startTime, System.currentTimeMillis());
@@ -246,10 +247,22 @@ class ProjectsTree extends JTree implements TimeLog {
 		switchToStoppedState();
 	}
 
+	private void stopAutomaticRecording() throws Exception {
+		switch (config.getAutoCountTowards()) {
+			case NOTHING:
+				break;
+			case UNKNOWN:
+				currentProjectPath = new String[] {"unknown"};
+			case PREVIOUS:
+				writeLogEntry(startTime, System.currentTimeMillis());
+		}
+	}
+
 	public void doPeriodicAction() {
 		try {
 			if (state == State.AUTOMATIC) {
-				stopRecording();
+				timer.stop();
+				switchToStoppedState();
 			} else if (state == State.RUNNING) {
 				stopRecording();
 				startRecording(currentProjectPath);
@@ -268,6 +281,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(config.getLogFilename(), true)));
 		out.write(entry + nl);
 		out.close();
+		System.out.println(entry);
 	}
 
 	public void switchToActiveState(String[] projectPath) {

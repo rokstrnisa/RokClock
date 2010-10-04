@@ -17,7 +17,7 @@ behaviour is possible --- see below). The window re-appears at the specified
 interval (`intervalInSeconds`) in a semi-active state (default colour: blue). If
 a node is pressed (left click) within another specified interval
 (`waitInSeconds`), the time elapsed since the window appeared will be counted
-towards the previous entry.
+towards the previous entry (unless specified otherwise with `autoCountTowards`).
 
 If the task should be stopped or changed before the end of the interval, you can
 maximise the program (if minimised), and click on the STOP button or a different
@@ -45,12 +45,53 @@ platforms.
 
 ## 4 Setting up the program ##
 The configuration for the program is located in the `config.txt` file. In there,
-you can specify various options including the time interval in seconds (default:
-`intervalInSeconds=3600`), the file containing the project and sub-project names
-(default: `projectsFilename=projects.txt`), and the output file for the log
-entries (default: `logFilename=log.txt`).
+you can specify various options.
 
-### 4.1 Specifying the projects ###
+### 4.1 Configuration options ###
+
+- `title` (default: `Time Log`): The title of the window.
+
+- `locX` (default: `600`): The horizontal starting coordinate of the window.
+
+- `locY` (default: `400`): The vertical starting coordinate of the window.
+
+- `width` (default: `170`): The starting width of the window.
+
+- `height` (default: `480`): The starting height of the window.
+
+- `intervalInSeconds` (default: `3600`): The period (in seconds) after which the
+  program will prompt you again.
+
+- `waitInSeconds` (default: `3600`): The period (in seconds) after the prompt in
+  which any user interaction will result in automatically counting the time from
+  the prompt to the user interaction towards whatever is specified for the
+  `autoCountTowards` option.
+
+- `defaultColor` (default: `0,255,0`): The Red-Green-Blue specification for the
+  _default colour_ of the project nodes.
+
+- `activeColor` (default: `255,0,0`): The Red-Green-Blue specification for the
+  _active colour_ of the project nodes.
+
+- `semiActiveColor` (default: `100,100,200`): The Red-Green-Blue specification
+  for the _semi-active colour_ of the project nodes, i.e. the colour for a
+  previously active node within the waiting period.
+
+- `behaviour` (default: `minimise`): The window state to go to after the user
+  has selected a project. Option `hide` removes the program even from the
+  taskbar, while `show` keeps the window visible.
+
+- `autoCountTowards` (default: `previous`): See option `waitInSeconds`. The
+  `previous` option counts towards the last selected project. The `unknown`
+  option counts towards the "unknown" root project. The `nothing` option does
+  not count towards anything.
+
+- `logFilename` (default: `log.txt`): The filename of the log file.
+
+- `projectsFilename` (default: `projects.txt`): The filename of the projects
+  file.
+
+### 4.2 Specifying the projects ###
 The projects are specified in the projects file (its path is specified within
 the configuration file). The syntax for specifying projects is:
 
@@ -61,19 +102,6 @@ the configuration file). The syntax for specifying projects is:
 The top-level projects should be your main projects (projects that project
 administration care about). Each name can have its tooltip appended in curly
 brackets. See `projects.txt` (the default projects file) for an example.
-
-### 4.2 Alternative behaviours ###
-By default, the program will minimise itself once a project has been selected.
-
-Some window managers do not support minimisation of windows. In that case,
-specifying `behaviour=hide` in the `config.txt` file will instead completely
-hide the window. However, this does make it more difficult to show the window
-again before the end of the specified interval (e.g. to stop/change the
-logging). In this case, you might want to use the non-daemon mode to run the
-program (see below), which makes it easy to close it.
-
-A third option is to not change the window state at all. This can be done by
-specifying `behaviour=show` in the `config.txt` file.
 
 ## 5 Running the program ##
 The program can be run either by compiling the source code yourself, or by
