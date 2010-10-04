@@ -14,15 +14,22 @@ import javax.swing.tree.*;
 @SuppressWarnings("serial")
 class ProjectsTree extends JTree implements TimeLog {
 	class ProjectNode extends DefaultMutableTreeNode {
-		private String tooltip;
+		private final String tooltip;
+		private final JLabel label;
 
 		public ProjectNode(String caption, String tooltip) {
 			super(caption);
 			this.tooltip = tooltip;
+			label = new JLabel(caption);
+			label.setOpaque(true);
 		}
 
 		public String getTooltip() {
 			return tooltip;
+		}
+		
+		public JLabel getLabel() {
+			return label;
 		}
 	}
 
@@ -59,7 +66,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				switch (e.getButton()) {
-					case MouseEvent.BUTTON1: onLeftMouseClick(); break;
+					case MouseEvent.BUTTON1: onLeftMouseClick(e); break;
 					case MouseEvent.BUTTON2: onMiddleMouseClick(e); break;
 					case MouseEvent.BUTTON3: onRightMouseClick(e); break;
 				}
@@ -189,14 +196,15 @@ class ProjectsTree extends JTree implements TimeLog {
 			expandRow(i);
 	}
 
-	private void onLeftMouseClick() {
-		currentProjectNode = (ProjectNode) getLastSelectedPathComponent();
-		if (currentProjectNode == null)
+	private void onLeftMouseClick(MouseEvent e) {
+		TreePath path = getPathForLocation(e.getX(), e.getY());
+		if (path == null)
 			return;
-		TreeNode[] path = currentProjectNode.getPath();
-		String[] projectPath = new String[path.length - 1];
-		for (int i = 1; i < path.length; i++)
-			projectPath[i-1] = ((ProjectNode) path[i]).getUserObject().toString();
+		ProjectNode node = (ProjectNode) path.getLastPathComponent();
+		currentProjectNode = node;
+		String[] projectPath = new String[path.getPathCount() - 1];
+		for (int i = 1; i < path.getPathCount(); i++)
+			projectPath[i-1] = ((ProjectNode) path.getPathComponent(i)).getUserObject().toString();
 		try {
 			if (state == State.AUTOMATIC)
 				state = State.RUNNING;
@@ -207,16 +215,15 @@ class ProjectsTree extends JTree implements TimeLog {
 	}
 
 	private void onMiddleMouseClick(MouseEvent e) {
-		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
-		ProjectNode node = (ProjectNode) lastRightClickedPath.getLastPathComponent();
-		TreePath path = new TreePath(model.getPathToRoot(node));
+		TreePath path = getPathForLocation(e.getX(), e.getY());
 		if (isExpanded(path)) collapsePath(path);
 		else expandPath(path);
 	}
 
 	private void onRightMouseClick(MouseEvent e) {
 		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
-		popupMenu.show(frame, e.getX(), e.getY());
+		if (lastRightClickedPath != null)
+			popupMenu.show(frame, e.getX(), e.getY());
 	}
 
 	public void startRecording(String[] projectPath) throws Exception {

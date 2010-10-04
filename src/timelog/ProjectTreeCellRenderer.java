@@ -3,67 +3,37 @@ package timelog;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.*;
 
-@SuppressWarnings("serial")
-class ProjectTreeCellRenderer extends DefaultTreeCellRenderer {
-	private ProjectsTree projectsTree;
-	private Config config;
+import timelog.ProjectsTree.ProjectNode;
+
+class ProjectTreeCellRenderer implements TreeCellRenderer {
+	private final ProjectsTree projectsTree;
+	private final Config config;
+	private final Icon leafIcon, openIcon, closedIcon;
 	
 	ProjectTreeCellRenderer(ProjectsTree projectsTree, Config config) {
 		this.projectsTree = projectsTree;
 		this.config = config;
-		setBackgroundNonSelectionColor(config.getDefaultColor());
-		setBorderSelectionColor(null);
+		DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
+		leafIcon = defaultRenderer.getDefaultLeafIcon();
+		openIcon = defaultRenderer.getDefaultOpenIcon();
+		closedIcon = defaultRenderer.getDefaultClosedIcon();
 	}
 	
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean sel, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
-		if (leaf) {
-			this.setIcon(leafIcon);
-		} else if (expanded) {
-			this.setIcon(openIcon);
-		} else {
-			this.setIcon(closedIcon);
-		}
-		this.setText(value.toString());
-//		System.out.println(value.getClass());
-		if (projectsTree.getCurrentPojectNode() == value) {
-			System.out.println("Found current node: " + value);
-			Color c = getSelectionColorForState(projectsTree.getState());
-			System.out.println("Selection color should be: " + c);
-			this.setBackground(c);
-			this.setBackgroundNonSelectionColor(c);
-			this.setBackgroundSelectionColor(c);
-		}
-		return this;
-//		return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf,
-//				row, hasFocus);
+		ProjectNode node = (ProjectNode) value;
+		JLabel label = node.getLabel();
+		label.setIcon(leaf ? leafIcon : (expanded ? openIcon : closedIcon));
+		if (projectsTree.getCurrentPojectNode() == node)
+			label.setBackground(getSelectionColorForState(projectsTree.getState()));
+		else
+			label.setBackground(config.getDefaultColor());
+		return label;
 	}
 
-//	public Color getBackgroundNonSelectionColor() {
-//		return config.getDefaultColor();
-//	}
-
-//	public Color getBackgroundSelectionColor() {
-//		return getCurrentSelectionColor();
-//	}
-
-//	public Color getBorderSelectionColor() {
-//		return null;
-//	}
-
-	public Dimension getPreferredSize() {
-		Dimension d = super.getPreferredSize();
-		if (d.width < 100) d.width = 100;
-		return d;
-	}
-
-	public Icon getLeafIcon() {
-		return super.getLeafIcon();
-	}
-	
 	private Color getSelectionColorForState(ProjectsTree.State state) {
 		switch (state) {
 			case AUTOMATIC: return config.getSemiActiveColor();
