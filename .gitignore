@@ -1,4 +1,4 @@
 bin
 log.txt
-dist/TimeLog.zip
+dist/TimeLog*.zip
 dist/TimeLog/
