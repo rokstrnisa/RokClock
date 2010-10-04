@@ -8,6 +8,6 @@ defaultColor=0,255,0
 activeColor=255,0,0
 semiActiveColor=100,100,200
 # behaviour=(minimise|hide|show)
-behaviour=lksdmac
+behaviour=show
 logFilename=log.txt
 projectsFilename=projects.txt

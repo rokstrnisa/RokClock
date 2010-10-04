@@ -35,7 +35,8 @@ class ProjectsTree extends JTree implements TimeLog {
 	private final DefaultTreeModel model;
 	private PopupMenu popupMenu;
 	private TreePath lastRightClickedPath;
-	private String[] currentPojectPath = null;
+	private ProjectNode currentProjectNode = null;
+	private String[] currentProjectPath = null;
 
 	enum State {STOPPED, RUNNING, AUTOMATIC}
 	private State state = State.STOPPED;
@@ -53,7 +54,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		expandAllNodes();
 		setRootVisible(false);
 		setBackground(config.getDefaultColor());
-		setCellRenderer(getTreeCellRenderer());
+		setCellRenderer(new ProjectTreeCellRenderer(this, config));
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -188,37 +189,11 @@ class ProjectsTree extends JTree implements TimeLog {
 			expandRow(i);
 	}
 
-	private TreeCellRenderer getTreeCellRenderer() {
-		return new DefaultTreeCellRenderer() {
-			public Color getBackgroundNonSelectionColor() {
-				return config.getDefaultColor();
-			}
-
-			public Color getBackgroundSelectionColor() {
-				return getCurrentSelectionColor();
-			}
-
-			public Color getBorderSelectionColor() {
-				return null;
-			}
-
-			public Dimension getPreferredSize() {
-				Dimension d = super.getPreferredSize();
-				if (d.width < 100) d.width = 100;
-				return d;
-			}
-
-			public Icon getLeafIcon() {
-				return super.getLeafIcon();
-			}
-		};
-	}
-
 	private void onLeftMouseClick() {
-		ProjectNode node = (ProjectNode) getLastSelectedPathComponent();
-		if (node == null)
+		currentProjectNode = (ProjectNode) getLastSelectedPathComponent();
+		if (currentProjectNode == null)
 			return;
-		TreeNode[] path = node.getPath();
+		TreeNode[] path = currentProjectNode.getPath();
 		String[] projectPath = new String[path.length - 1];
 		for (int i = 1; i < path.length; i++)
 			projectPath[i-1] = ((ProjectNode) path[i]).getUserObject().toString();
@@ -246,7 +221,7 @@ class ProjectsTree extends JTree implements TimeLog {
 
 	public void startRecording(String[] projectPath) throws Exception {
 		if (state != State.STOPPED) stopRecording();
-		this.currentPojectPath = projectPath;
+		currentProjectPath = projectPath;
 		startTime = System.currentTimeMillis();
 		switchToActiveState(projectPath);
 	}
@@ -270,7 +245,7 @@ class ProjectsTree extends JTree implements TimeLog {
 				stopRecording();
 			} else if (state == State.RUNNING) {
 				stopRecording();
-				startRecording(currentPojectPath);
+				startRecording(currentProjectPath);
 				switchToSemiActiveState();
 			}
 		} catch (Exception ex) {displayProblem(ex);}
@@ -281,20 +256,11 @@ class ProjectsTree extends JTree implements TimeLog {
 		String startTimeS = df.format(new Date(startTime));
 		String endTimeS = df.format(new Date(endTime));
 		String entry = startTimeS + "," + endTimeS;
-		for (String projectPathNode : currentPojectPath)
+		for (String projectPathNode : currentProjectPath)
 			entry += "," + projectPathNode;
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(config.getLogFilename(), true)));
 		out.write(entry + nl);
 		out.close();
-	}
-
-	private Color getCurrentSelectionColor() {
-		switch (state) {
-			case AUTOMATIC: return config.getSemiActiveColor();
-			case RUNNING: return config.getActiveColor();
-			case STOPPED:
-			default: return config.getDefaultColor();
-		}
 	}
 
 	public void switchToActiveState(String[] projectPath) {
@@ -345,5 +311,13 @@ class ProjectsTree extends JTree implements TimeLog {
 
 	public void displayProblem(Exception e) {
 		JOptionPane.showMessageDialog(this, "A problem has occurred: " + e.getMessage());
+	}
+	
+	ProjectNode getCurrentPojectNode() {
+		return currentProjectNode;
+	}
+	
+	State getState() {
+		return state;
 	}
 }
