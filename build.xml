@@ -54,13 +54,23 @@
 		</exec>
 	</target>
 
-	<target name="dist" depends="clean-dist,jar,readme">
+	<target name="copy-to-dist">
 		<copy todir="${contents.dir}" overwrite="true" preservelastmodified="true">
 			<fileset file="${config.file}" />
 			<fileset file="${projects.file}" />
 			<fileset file="${dist.dir}/run.*" />
 		</copy>
 		<chmod file="${contents.dir}/run.*" perm="+x" />
+	</target>
+
+	<target name="win-format">
+		<exec executable="todos">
+			<arg value="${contents.dir}/${config.file}" />
+			<arg value="${contents.dir}/${projects.file}" />
+		</exec>
+	</target>
+
+	<target name="dist" depends="clean-dist,jar,readme,copy-to-dist,win-format">
 		<zip destfile="${zip.file}" basedir="${contents.dir}" />
 	</target>
 </project>
