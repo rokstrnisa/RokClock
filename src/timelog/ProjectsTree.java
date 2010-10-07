@@ -349,4 +349,12 @@ class ProjectsTree extends JTree implements TimeLog {
 	State getState() {
 		return state;
 	}
+
+	String[] getTopLevelProjects() {
+		final int size = root.getChildCount();
+		String[] projects = new String[size];
+		for (int i = 0; i < size; i++)
+			projects[i] = ((ProjectNode) root.getChildAt(i)).getUserObject().toString();
+		return projects;
+	}
 }

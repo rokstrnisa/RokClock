@@ -6,7 +6,8 @@ import java.text.*;
 import java.util.Properties;
 
 class Config {
-	static final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	static final String dfS = "dd/MM/yyyy HH:mm:ss";
+	static final DateFormat df = new SimpleDateFormat(dfS);
 	private final String configFilename = "config.txt";
 	private final Properties properties = new Properties();
 	

@@ -188,12 +188,18 @@ The source code and the pre-compiled JAR both contain the class
 `timelog.Analyser`. If you have a pre-compiled JAR available, you can start it
 with
 
-    java -cp TimeLog.jar timelog.Analyser <logFilename>
+    java -cp TimeLog.jar timelog.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]
 
 If you have the source code available, you can start it with
 
     ant compile
-    java -cp bin timelog.Analyser <logFilename>
+    java -cp bin timelog.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]
+
+### 6.3 Using the GUI analyser ###
+The main window of the program now has a "Review & Save" button, which opens up
+a new window where the sums for the top-level projects are displayed for any
+specified time period. The computed values can be manually modified before they
+are saved into a file.
 
 ## 7 Feedback ##
 All feedback is much appreciated. Please send it to:
