@@ -42,6 +42,10 @@ class Config {
 		return get(Behaviour.class, Behaviour.MINIMISE);
 	}
 
+	boolean getWriteTimeouts() {
+		return get("writeTimeouts", false);
+	}
+
 	String getTitle() {
 		return get("title", "Time Log");
 	}
@@ -74,22 +78,29 @@ class Config {
 		return get("semiActiveColor", Color.CYAN);
 	}
 
-	private String get(String key, String defaultValue) {
+	@SuppressWarnings("unchecked")
+	private <T> T get(String key, T defaultValue) {
 		String v = properties.getProperty(key);
-		return v == null ? defaultValue : v;
-	}
-
-	private int get(String key, int defaultValue) {
-		String v = properties.getProperty(key);
-		return v == null ? defaultValue : Integer.parseInt(v);
-	}
-
-	private Color get(String key, Color defaultValue) {
-		String v = properties.getProperty(key);
-		if (v == null) return defaultValue;
-		String[] rgb = v.split(",");
-		return new Color(Integer.parseInt(rgb[0]),
-			Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+		try {
+			if (v == null)
+				return defaultValue;
+			if (defaultValue instanceof String)
+				return (T) v;
+			if (defaultValue instanceof Boolean)
+				return (T) Boolean.valueOf(v);
+			if (defaultValue instanceof Integer)
+				return (T) Integer.valueOf(v);
+			if (defaultValue instanceof Color) {
+				String[] rgb = v.split(",");
+				return (T) new Color(Integer.parseInt(rgb[0]), Integer
+						.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+			}
+		} catch (Exception e) {
+			System.err.println("Couldn't parse "
+					+ defaultValue.getClass().getSimpleName().toLowerCase()
+					+ " specification for '" + key + "': " + v);
+		}
+		return defaultValue;
 	}
 
 	<T extends Enum<T>> T get(Class<T> c, T defaultValue) {

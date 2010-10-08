@@ -9,12 +9,14 @@ import timelog.ProjectsTree.ProjectNode;
 
 class ProjectTreeCellRenderer implements TreeCellRenderer {
 	private final ProjectsTree projectsTree;
-	private final Config config;
 	private final Icon leafIcon, openIcon, closedIcon;
+	private final Color defaultColor, semiActiveColor, activeColor;
 	
 	ProjectTreeCellRenderer(ProjectsTree projectsTree, Config config) {
 		this.projectsTree = projectsTree;
-		this.config = config;
+		defaultColor = config.getDefaultColor();
+		semiActiveColor = config.getSemiActiveColor();
+		activeColor = config.getActiveColor();
 		DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 		leafIcon = defaultRenderer.getDefaultLeafIcon();
 		openIcon = defaultRenderer.getDefaultOpenIcon();
@@ -30,16 +32,16 @@ class ProjectTreeCellRenderer implements TreeCellRenderer {
 		if (projectsTree.getCurrentPojectNode() == node)
 			label.setBackground(getSelectionColorForState(projectsTree.getState()));
 		else
-			label.setBackground(config.getDefaultColor());
+			label.setBackground(defaultColor);
 		return label;
 	}
 
 	private Color getSelectionColorForState(ProjectsTree.State state) {
 		switch (state) {
-			case AUTOMATIC: return config.getSemiActiveColor();
-			case RUNNING: return config.getActiveColor();
+			case AUTOMATIC: return semiActiveColor;
+			case RUNNING: return activeColor;
 			case STOPPED:
-			default: return config.getDefaultColor();
+			default: return defaultColor;
 		}
 	}
 }

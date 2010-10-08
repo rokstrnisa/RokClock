@@ -262,6 +262,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		try {
 			if (state == State.AUTOMATIC) {
 				timer.stop();
+				potentiallyWriteTimeout();
 				switchToStoppedState();
 			} else if (state == State.RUNNING) {
 				stopRecording();
@@ -270,6 +271,12 @@ class ProjectsTree extends JTree implements TimeLog {
 			}
 		} catch (Exception ex) {displayProblem(ex);}
 		unminimiseOrShow();
+	}
+
+	private void potentiallyWriteTimeout() throws Exception {
+		if (!config.getWriteTimeouts()) return;
+		currentProjectPath = new String[] {"(timed out)"};
+		writeLogEntry(startTime, startTime);
 	}
 
 	public void writeLogEntry(long startTime, long endTime) throws Exception {

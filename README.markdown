@@ -86,6 +86,11 @@ you can specify various options.
   option counts towards the "unknown" root project. The `nothing` option does
   not count towards anything.
 
+- `writeTimeouts` (default: `false`): If set to `true`, the program writes a log
+  entry whenever the end of a wait period is reached without being interrupted
+  by the user. The log entry consists of the start time and the end time equal
+  to the end time of the previous log entry, and is titled `(timed out)`.
+
 - `logFilename` (default: `log.txt`): The filename of the log file.
 
 - `projectsFilename` (default: `projects.txt`): The filename of the projects
