@@ -1,6 +1,3 @@
-# For main projects, you should only use the approved 3-letter acronyms.
-# You are free to comment out or delete any line that does not apply to you.
-
 # Syntax:
 # main_project[{tooltip}]
 # 	sub_project[{tooltip}]

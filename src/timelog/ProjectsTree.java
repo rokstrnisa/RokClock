@@ -143,8 +143,6 @@ class ProjectsTree extends JTree implements TimeLog {
 
 	private void saveProjects() throws IOException {
 		StringBuilder sb = new StringBuilder();
-		sb.append("# For main projects, you should only use the approved 3-letter acronyms." + nl);
-		sb.append("# You are free to comment out or delete any line that does not apply to you." + nl + nl);
 		sb.append("# Syntax:" + nl + "# main_project[{tooltip}]" + nl);
 		sb.append("# \tsub_project[{tooltip}]" + nl + "# \t\tsub_sub_project[{tooltip}]" + nl + nl);
 		saveChildrenOf(sb, root, 0);
