@@ -27,7 +27,7 @@ class Config {
 	}
 	
 	String getProjectsFilenameDefault() {
-		return getProjectsFilename() + ".default";
+		return "projects.txt.default";
 	}
 
 	String getLogFilename() {

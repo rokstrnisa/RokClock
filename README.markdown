@@ -44,8 +44,9 @@ Since the program is written in Java, it should compile and run on many
 platforms.
 
 ## 4 Setting up the program ##
-The configuration for the program is located in the `config.txt` file. In there,
-you can specify various options.
+The configuration for the program is located in the `config.txt` file. (If
+`config.txt` does not exist when the program is started, it is copied from
+`config.txt.default`.) In there, you can specify various options.
 
 ### 4.1 Configuration options ###
 
@@ -94,7 +95,8 @@ you can specify various options.
 - `logFilename` (default: `log.txt`): The filename of the log file.
 
 - `projectsFilename` (default: `projects.txt`): The filename of the projects
-  file.
+  file. (If the specified file does not exist once the program starts, it is
+  copied from `projects.txt.default`.)
 
 ### 4.2 Specifying the projects ###
 The projects are specified in the projects file (its path is specified within
@@ -106,7 +108,7 @@ the configuration file). The syntax for specifying projects is:
 
 The top-level projects should be your main projects (projects that project
 administration care about). Each name can have its tooltip appended in curly
-brackets. See `projects.txt` (the default projects file) for an example.
+brackets. See `projects.txt.default` for an example.
 
 ## 5 Running the program ##
 The program can be run either by compiling the source code yourself, or by
