@@ -116,10 +116,17 @@ class ProjectsTree extends JTree implements TimeLog {
 		catch (IOException e) {displayProblem(e);}
 	}
 
+	private File getProjectsFile() throws IOException {
+		File projectsFile = new File(config.getProjectsFilename());
+		if (!projectsFile.exists())
+			Main.copyFile(new File(config.getProjectsFilenameDefault()), projectsFile);
+		return projectsFile;
+	}
+
 	private void loadProjects() throws IOException {
 		List<DefaultMutableTreeNode> nodeChain = new ArrayList<DefaultMutableTreeNode>();
 		nodeChain.add(root);
-		BufferedReader br = new BufferedReader(new FileReader(config.getProjectsFilename()));
+		BufferedReader br = new BufferedReader(new FileReader(getProjectsFile()));
 		String line;
 		while ((line = br.readLine()) != null) {
 			// pre-processing and comments
@@ -204,8 +211,6 @@ class ProjectsTree extends JTree implements TimeLog {
 		for (int i = 1; i < path.getPathCount(); i++)
 			projectPath[i-1] = ((ProjectNode) path.getPathComponent(i)).getUserObject().toString();
 		try {
-//			if (state == State.AUTOMATIC)
-//				state = State.RUNNING;
 			startRecording(projectPath);
 			minimiseOrHide();
 			timer.restart();
@@ -286,7 +291,6 @@ class ProjectsTree extends JTree implements TimeLog {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(config.getLogFilename(), true)));
 		out.write(entry + nl);
 		out.close();
-		System.out.println(entry);
 	}
 
 	public void switchToActiveState(String[] projectPath) {

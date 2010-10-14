@@ -9,17 +9,25 @@ class Config {
 	static final String dfS = "dd/MM/yyyy HH:mm:ss";
 	static final DateFormat df = new SimpleDateFormat(dfS);
 	private final String configFilename = "config.txt";
+	private final String configFilenameDefault = configFilename + ".default";
 	private final Properties properties = new Properties();
 	
 	enum AutoCountTowards {PREVIOUS, UNKNOWN, NOTHING}
 	enum Behaviour {MINIMISE, HIDE, SHOW}
 
 	Config() throws IOException {
-		properties.load(new FileInputStream(configFilename));
+		File configFile = new File(configFilename);
+		if (!configFile.exists())
+			Main.copyFile(new File(configFilenameDefault), configFile);
+		properties.load(new FileInputStream(configFile));
 	}
 
 	String getProjectsFilename() {
 		return get("projectsFilename", "projects.txt");
+	}
+	
+	String getProjectsFilenameDefault() {
+		return getProjectsFilename() + ".default";
 	}
 
 	String getLogFilename() {
