@@ -11,7 +11,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 @SuppressWarnings("serial")
-class ReviewDialog extends JDialog {
+class ReviewDialog extends JDialog implements CaretListener {
 	private class DateLabel extends JLabel {
 		private GregorianCalendar calendar = new GregorianCalendar();
 
@@ -45,6 +45,17 @@ class ReviewDialog extends JDialog {
 		}
 	}
 
+	private class Row {
+		private double hours = 0;
+		private JTextField hoursTF = new JTextField();
+		private JLabel percentL = new JLabel("N/A", SwingConstants.RIGHT);
+
+		Row() {
+			hoursTF.addCaretListener(ReviewDialog.this);
+			hoursTF.setHorizontalAlignment(JTextField.RIGHT);
+		}
+	}
+
 	private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private Main main;
@@ -59,7 +70,7 @@ class ReviewDialog extends JDialog {
 	private DateLabel fromDate = new DateLabel();
 	private DateLabel toDate = new DateLabel();
 	private JPanel reviewPanel = new JPanel();
-	private Map<String, JTextField> fields = new HashMap<String, JTextField>();
+	private Map<String, Row> rows = new HashMap<String, Row>();
 	private JLabel totalLabel = new JLabel("", SwingConstants.RIGHT);
 	private JButton saveButton = createSaveButton();
 	private JFileChooser fileChooser = new JFileChooser();
@@ -118,7 +129,7 @@ class ReviewDialog extends JDialog {
 
 	private void refreshReviewTable() {
 		reviewPanel.removeAll();
-		fields.clear();
+		rows.clear();
 		GridBagLayout gbl = new GridBagLayout();
 		reviewPanel.setLayout(gbl);
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -132,7 +143,7 @@ class ReviewDialog extends JDialog {
 				addRow(gbl, gbc, project, hours);
 			}
 			for (String project : main.getProjectsTree().getTopLevelProjects())
-				if (!fields.containsKey(project))
+				if (!rows.containsKey(project))
 					addRow(gbl, gbc, project, 0);
 			gbc.insets = new Insets(10, 0, 0, 0);
 			addLeftLabel(gbl, gbc, "TOTAL");
@@ -149,9 +160,12 @@ class ReviewDialog extends JDialog {
 	}
 
 	private void addRow(GridBagLayout gbl, GridBagConstraints gbc, String title, double hours) {
+		Row row = new Row();
 		addLeftLabel(gbl, gbc, title);
-		addMiddleField(gbl, gbc, title, hours);
+		addMiddleField(gbl, gbc, row, hours);
 		addRightLabel(gbl, gbc);
+		addPercentLabel(gbl, gbc, row);
+		rows.put(title, row);
 		gbc.gridy++;
 	}
 
@@ -162,20 +176,13 @@ class ReviewDialog extends JDialog {
 		reviewPanel.add(projectLabel);
 	}
 
-	private void addMiddleField(GridBagLayout gbl, GridBagConstraints gbc, String title, double hours) {
-		JTextField tf = new JTextField(decimalFormat.format(hours));
-		tf.addCaretListener(new CaretListener() {
-			public void caretUpdate(CaretEvent e) {
-				recomputeTotal();
-			}
-		});
-		tf.setHorizontalAlignment(JTextField.RIGHT);
+	private void addMiddleField(GridBagLayout gbl, GridBagConstraints gbc, Row row, double hours) {
+		row.hoursTF.setText(decimalFormat.format(hours));
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		gbl.setConstraints(tf, gbc);
+		gbl.setConstraints(row.hoursTF, gbc);
 		gbc.weightx = 0;
-		reviewPanel.add(tf);
-		fields.put(title, tf);
+		reviewPanel.add(row.hoursTF);
 	}
 
 	private void addRightLabel(GridBagLayout gbl, GridBagConstraints gbc) {
@@ -187,15 +194,23 @@ class ReviewDialog extends JDialog {
 		reviewPanel.add(hLabel);
 	}
 
+	private void addPercentLabel(GridBagLayout gbl, GridBagConstraints gbc, Row row) {
+		gbc.gridx = 3;
+		gbc.ipadx = 5;
+		gbl.setConstraints(row.percentL, gbc);
+		gbc.ipadx = 0;
+		reviewPanel.add(row.percentL);
+	}
+
 	private void recomputeTotal() {
 		double total = 0;
-		for (JTextField tf : fields.values()) {
+		for (Row row : rows.values()) {
 			try {
-				double hours = Double.parseDouble(tf.getText());
-				total += hours;
-				tf.setForeground(normalColour);
+				row.hours = Double.parseDouble(row.hoursTF.getText());
+				total += row.hours;
+				row.hoursTF.setForeground(normalColour);
 			} catch (NumberFormatException e) {
-				tf.setForeground(errorColour);
+				row.hoursTF.setForeground(errorColour);
 				totalLabel.setText("ERROR");
 				totalLabel.setForeground(errorColour);
 				return;
@@ -203,6 +218,9 @@ class ReviewDialog extends JDialog {
 		}
 		totalLabel.setText(decimalFormat.format(total));
 		totalLabel.setForeground(normalColour);
+		for (Row row : rows.values())
+			row.percentL.setText("(" + decimalFormat.format(100 * row.hours / total) + "%)");
+		pack();
 	}
 
 	private JButton createSaveButton() {
@@ -229,9 +247,13 @@ class ReviewDialog extends JDialog {
 		final String nl = "\r\n";
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-			for (Entry<String, JTextField> entry : fields.entrySet())
-				bw.write(entry.getKey() + "," + entry.getValue().getText() + nl);
+			for (Entry<String, Row> entry : rows.entrySet())
+				bw.write(entry.getKey() + "," + entry.getValue().hoursTF.getText() + nl);
 			bw.close();
 		} catch (IOException e) {e.printStackTrace();}
+	}
+
+	public void caretUpdate(CaretEvent e) {
+		recomputeTotal();
 	}
 }
