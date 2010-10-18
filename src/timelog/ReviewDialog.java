@@ -247,8 +247,12 @@ class ReviewDialog extends JDialog implements CaretListener {
 		final String nl = "\r\n";
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-			for (Entry<String, Row> entry : rows.entrySet())
-				bw.write(entry.getKey() + "," + entry.getValue().hoursTF.getText() + nl);
+			double total = Double.parseDouble(totalLabel.getText());
+			for (Entry<String, Row> entry : rows.entrySet()) {
+				double hours = Double.parseDouble(entry.getValue().hoursTF.getText());
+				double fraction = hours / total;
+				bw.write(entry.getKey() + "," + decimalFormat.format(fraction) + nl);
+			}
 			bw.close();
 		} catch (IOException e) {e.printStackTrace();}
 	}

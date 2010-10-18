@@ -205,8 +205,9 @@ If you have the source code available, you can start it with
 ### 6.3 Using the GUI analyser ###
 The main window of the program now has a "Review & Save" button, which opens up
 a new window where the sums for the top-level projects are displayed for any
-specified time period. The computed values can be manually modified before they
-are saved into a file.
+specified time period. The computed values can be manually modified within the
+program. The output file has the CSV format, and contains a line for each
+top-project name, together with the fraction of time spent on it.
 
 ## 7 Feedback ##
 All feedback is much appreciated. Please send it to:
