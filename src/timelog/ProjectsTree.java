@@ -13,7 +13,7 @@ import javax.swing.tree.*;
 
 @SuppressWarnings("serial")
 class ProjectsTree extends JTree implements TimeLog {
-	class ProjectNode extends DefaultMutableTreeNode {
+	static class ProjectNode extends DefaultMutableTreeNode {
 		private final String tooltip;
 		private final JLabel label;
 
@@ -52,7 +52,7 @@ class ProjectsTree extends JTree implements TimeLog {
 	private long startTime = 0;
 
 	ProjectsTree(Frame frame, Config config) throws IOException {
-		super(new DefaultMutableTreeNode());
+		super(new ProjectNode("root", "root"));
 		this.frame = frame;
 		this.config = config;
 		root = (DefaultMutableTreeNode) getModel().getRoot();
