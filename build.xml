@@ -1,6 +1,6 @@
 <project name="Time Log" basedir="." default="run">
-	<property name="config.file" value="config.txt" />
-	<property name="projects.file" value="projects.txt" />
+	<property name="config.file" value="config.txt.default" />
+	<property name="projects.file" value="projects.txt.default" />
 	<property name="main.class" value="timelog.Main" />
 	<property name="src.dir" value="src" />
 	<property name="bin.dir" value="bin" />
