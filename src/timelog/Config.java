@@ -11,6 +11,7 @@ class Config {
 	private final String configFilename = "config.txt";
 	private final String configFilenameDefault = configFilename + ".default";
 	private final Properties properties = new Properties();
+	private final String USER_HOME;
 	
 	enum AutoCountTowards {PREVIOUS, UNKNOWN, NOTHING}
 	enum Behaviour {MINIMISE, HIDE, SHOW}
@@ -20,10 +21,11 @@ class Config {
 		if (!configFile.exists())
 			Main.copyFile(new File(configFilenameDefault), configFile);
 		properties.load(new FileInputStream(configFile));
+		USER_HOME = System.getProperty("user.home");
 	}
 
 	String getProjectsFilename() {
-		return get("projectsFilename", "projects.txt");
+		return processFilePath(get("projectsFilename", "projects.txt"));
 	}
 	
 	String getProjectsFilenameDefault() {
@@ -31,7 +33,7 @@ class Config {
 	}
 
 	String getLogFilename() {
-		return get("logFilename", "log.txt");
+		return processFilePath(get("logFilename", "log.txt"));
 	}
 
 	int getIntervalInSeconds() {
@@ -111,7 +113,7 @@ class Config {
 		return defaultValue;
 	}
 
-	<T extends Enum<T>> T get(Class<T> c, T defaultValue) {
+	private <T extends Enum<T>> T get(Class<T> c, T defaultValue) {
 		String propertyName = c.getSimpleName();
 		propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
 		String defaultValueS = defaultValue.toString().toLowerCase();
@@ -124,5 +126,9 @@ class Config {
 					+ properties.getProperty("behaviour"));
 		}
 		return result;
+	}
+
+	private String processFilePath(String path) {
+		return path.replace("~", USER_HOME);
 	}
 }
