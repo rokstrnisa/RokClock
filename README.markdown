@@ -211,4 +211,7 @@ top-project name, together with the fraction of time spent on it.
 All feedback is much appreciated. Please send it to:
 [Rok Strnisa](mailto:rok.strnisa@citrix.com "rok.strnisa@citrix.com")
 
+If you would like to report an issue, or make a feature request, please do so
+[here](http://github.com/rokstrnisa/RokClock/issues).
+
 Thanks.
