@@ -1,4 +1,4 @@
-# ROKCLOCK #
+# RokClock #
 
 ## 1 Purpose ##
 This program helps you keep a log of how much time you spend on specific
