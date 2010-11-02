@@ -5,15 +5,44 @@ import java.io.*;
 import java.text.*;
 import java.util.Properties;
 
+/**
+ * This class encapsulates all configuration settings, most of which can be
+ * user-specified.
+ */
 class Config {
+	/**
+	 * The string definition of the date-format {@link #df}.
+	 */
 	static final String dfS = "dd/MM/yyyy HH:mm:ss";
+	/**
+	 * The date-format used for parsing and writing dates.
+	 */
 	static final DateFormat df = new SimpleDateFormat(dfS);
+	/**
+	 * The name of the configuration file.
+	 */
 	private final String configFilename = "config.txt";
+	/**
+	 * The name of the default (template) configuration file.
+	 */
 	private final String configFilenameDefault = configFilename + ".default";
+	/**
+	 * The properties stored within the configuration file.
+	 */
 	private final Properties properties = new Properties();
+	/**
+	 * The user's home directory. Used to replace tilde symbols in any
+	 * user-specified path.
+	 */
 	private final String USER_HOME;
-	
+
+	/**
+	 * The options for counting the user-interrupted semi-active time.
+	 */
 	enum AutoCountTowards {PREVIOUS, UNKNOWN, NOTHING}
+	/**
+	 * The options of window behaviour when the active time ends.
+	 */
 	enum Behaviour {MINIMISE, HIDE, SHOW}
 
 	Config() throws IOException {
