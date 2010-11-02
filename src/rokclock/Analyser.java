@@ -1,4 +1,4 @@
-package timelog;
+package rokclock;
 
 import java.io.*;
 import java.text.*;
@@ -9,7 +9,7 @@ public class Analyser {
 
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1 && args.length != 3) {
-			System.err.println("Usage: java -cp bin timelog.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]");
+			System.err.println("Usage: java -cp bin rokclock.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]");
 			System.exit(1);
 		}
 		String logFilename = args[0];

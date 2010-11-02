@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -jar TimeLog.jar
+java -jar RokClock.jar

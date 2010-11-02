@@ -1,4 +1,4 @@
-package timelog;
+package rokclock;
 
 import java.awt.*;
 import java.awt.event.*;

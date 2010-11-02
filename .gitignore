@@ -1,6 +1,6 @@
 bin
 config.txt
-dist/TimeLog*.zip
-dist/TimeLog/
+dist/RokClock*.zip
+dist/RokClock/
 log.txt
 projects.txt

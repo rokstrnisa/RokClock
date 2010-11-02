@@ -1,4 +1,4 @@
-package timelog;
+package rokclock;
 
 interface TimeLog {
 	void startRecording(String[] projectPath) throws Exception;

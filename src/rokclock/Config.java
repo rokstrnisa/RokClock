@@ -1,4 +1,4 @@
-package timelog;
+package rokclock;
 
 import java.awt.Color;
 import java.io.*;
@@ -57,7 +57,7 @@ class Config {
 	}
 
 	String getTitle() {
-		return get("title", "Time Log");
+		return "RokClock";
 	}
 
 	int getLocX() {

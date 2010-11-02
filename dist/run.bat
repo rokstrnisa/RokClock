@@ -1,1 +1,1 @@
-java -jar TimeLog.jar
+java -jar RokClock.jar

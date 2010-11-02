@@ -1,11 +1,11 @@
-package timelog;
+package rokclock;
 
 import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 
-import timelog.ProjectsTree.ProjectNode;
+import rokclock.ProjectsTree.ProjectNode;
 
 class ProjectTreeCellRenderer implements TreeCellRenderer {
 	private final ProjectsTree projectsTree;

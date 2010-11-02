@@ -1,13 +1,13 @@
-<project name="Time Log" basedir="." default="run">
+<project name="RokClock" basedir="." default="run">
 	<property name="config.file" value="config.txt.default" />
 	<property name="projects.file" value="projects.txt.default" />
-	<property name="main.class" value="timelog.Main" />
+	<property name="main.class" value="rokclock.Main" />
 	<property name="src.dir" value="src" />
 	<property name="bin.dir" value="bin" />
 	<property name="dist.dir" value="dist" />
-	<property name="contents.dir" value="${dist.dir}/TimeLog" />
-	<property name="jar.file" value="${contents.dir}/TimeLog.jar" />
-	<property name="zip.file" value="${dist.dir}/TimeLog.zip" />
+	<property name="contents.dir" value="${dist.dir}/RokClock" />
+	<property name="jar.file" value="${contents.dir}/RokClock.jar" />
+	<property name="zip.file" value="${dist.dir}/RokClock.zip" />
 	<property name="readme.markdown" value="README.markdown" />
 	<property name="readme.html" value="${contents.dir}/README.html" />
 
