@@ -208,8 +208,9 @@ program. The output file has the CSV format, and contains a line for each
 top-project name, together with the fraction of time spent on it.
 
 ## 7 Feedback ##
-All feedback is much appreciated. Please send it to:
-[Rok Strnisa](mailto:rok.strnisa@citrix.com "rok.strnisa@citrix.com")
+All feedback is much appreciated. Please send it to [my
+email](mailto:rok.strnisa@citrix.com "rok.strnisa@citrix.com"), or simply post
+it on [Ohloh](https://www.ohloh.net/p/rokclock).
 
 If you would like to report an issue, or make a feature request, please do so
 [here](http://github.com/rokstrnisa/RokClock/issues).
