@@ -12,9 +12,18 @@ import javax.swing.*;
  */
 @SuppressWarnings("serial")
 class DateChooser extends JDialog implements ActionListener {
+	/**
+	 * The number associated with the OK option for the dialog.
+	 */
 	static final int OK_OPTION = 1;
+	/**
+	 * The number associated with the CANCEL option for the dialog.
+	 */
 	static final int CANCEL_OPTION = 2;
 
+	/**
+	 * The array containing the names of all twelve months.
+	 */
 	private static final ArrayList<String> monthNames;
 	static {
 		monthNames = new ArrayList<String>(12);
@@ -32,10 +41,25 @@ class DateChooser extends JDialog implements ActionListener {
 		monthNames.add("December");
 	};
 
+	/**
+	 * The currently chosen date.
+	 */
 	private GregorianCalendar date;
+	/**
+	 * The label displaying the currently chosen month.
+	 */
 	private JLabel monthLabel;
+	/**
+	 * The label displaying the currently chosen year.
+	 */
 	private JLabel yearLabel;
+	/**
+	 * The panel containing the day grid for the currently chosen month.
+	 */
 	private JPanel dayGrid;
+	/**
+	 * Specifies whether the date is ready to be retrieved.
+	 */
 	private boolean ready;
 
 	/**
@@ -133,9 +157,6 @@ class DateChooser extends JDialog implements ActionListener {
 		return ready ? OK_OPTION : CANCEL_OPTION;
 	}
 
-	/**
-	 * Action handler for this dialog, which handles all the button presses.
-	 */
 	public void actionPerformed(ActionEvent ev) {
 		String label = ((JButton) ev.getSource()).getText();
 

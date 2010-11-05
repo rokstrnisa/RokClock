@@ -4,9 +4,28 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 
+/**
+ * The analyser of the log files. It currently provides a summary for top-level
+ * projects for a specified time period.
+ */
 public class Analyser {
+	/**
+	 * A platform-independent newline.
+	 */
 	private final String nl = System.getProperty("line.separator");
 
+	/**
+	 * The main method of this analyser, which is used for running it from the
+	 * command prompt. As arguments, it expects the name of the log file,
+	 * followed by the start date (inclusive) and the stop date (exclusive). The
+	 * dates should have the "dd/MM/yyyy" format. The results are written to the
+	 * standard output.
+	 *
+	 * @param args
+	 *            The command-line arguments as specified above.
+	 * @throws Exception
+	 *             Thrown if the processing fails.
+	 */
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1 && args.length != 3) {
 			System.err.println("Usage: java -cp bin rokclock.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]");
@@ -29,9 +48,35 @@ public class Analyser {
 		a.displayResults();
 	}
 
+	/**
+	 * The field that maps top-level project names to the sum of milliseconds
+	 * spent on them for a specified time period.
+	 */
 	private Map<String,Long> sums;
-	private Date fromDate, toDate;
+	/**
+	 * The start of a specified time period.
+	 */
+	private Date fromDate;
+	/**
+	 * The end of a specified time period.
+	 */
+	private Date toDate;
 
+	/**
+	 * This method reads the specified log file for the specified time period.
+	 * The processing of individual log entries is delegated to @
+	 * #readLogEntry(String)} .
+	 *
+	 * @param logFilename
+	 *            The name of the log file.
+	 * @param fromDate
+	 *            The start of the time period.
+	 * @param toDate
+	 *            The end of the time period.
+	 * @return The resulting map of results.
+	 * @throws IOException
+	 *             Thrown if reading or parsing fails.
+	 */
 	Map<String,Long> processLogFile(String logFilename, Date fromDate, Date toDate) throws IOException {
 		sums = new TreeMap<String,Long>();
 		this.fromDate = fromDate;
@@ -44,6 +89,17 @@ public class Analyser {
 		return sums;
 	}
 
+	/**
+	 * Parses a single log entry. Fields should be separated by commas; any
+	 * spaces around commas are ignored. If the first field is recognised as a
+	 * date, the new log format (from,to,project,sub-project,...) is used;
+	 * otherwise, the old log format (project,sub-project,from,to) is used. The
+	 * recording of data is delegated to
+	 * {@link #recordData(String, String, String, String)}.
+	 *
+	 * @param entry
+	 *            A single log entry to process.
+	 */
 	private void readLogEntry(String entry) {
 		String[] fields = entry.split("\\s*,\\s*");
 		try { // try new format
@@ -54,6 +110,19 @@ public class Analyser {
 		}
 	}
 
+	/**
+	 * Records the data from a single log entry, independent from the log
+	 * format.
+	 *
+	 * @param entry
+	 *            The whole log entry; used for debugging purposes only.
+	 * @param project
+	 *            The name of the top-level project.
+	 * @param start
+	 *            The start of the activity.
+	 * @param end
+	 *            The end of the activity.
+	 */
 	private void recordData(String entry, String project, String start, String end) {
 		try {
 			Date startDate = Config.df.parse(start);
@@ -77,6 +146,9 @@ public class Analyser {
 		}
 	}
 
+	/**
+	 * Outputs results of the analyser to the standard output.
+	 */
 	private void displayResults() {
 		for (Map.Entry<String, Long> entry : sums.entrySet()) {
 			String project = entry.getKey();

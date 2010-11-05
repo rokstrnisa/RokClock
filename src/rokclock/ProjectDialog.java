@@ -6,15 +6,48 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+/**
+ * This class defines the dialog that appears when the selects the option to add
+ * a sub-project.
+ */
 @SuppressWarnings("serial")
 class ProjectDialog extends JDialog {
+	/**
+	 * The label for the sub-project name.
+	 */
 	private JLabel projectNameL = new JLabel("[Sub-]Project Name: ");
+	/**
+	 * The label for the description.
+	 */
 	private JLabel descriptionL = new JLabel("Description (optional): ");
+	/**
+	 * The text field for the sub-project name.
+	 */
 	private JTextField projectNameTF = new JTextField();
+	/**
+	 * The text field for the description.
+	 */
 	private JTextField descriptionTF = new JTextField();
+	/**
+	 * The cancel button. If pressed, the action is cancelled.
+	 */
 	private JButton cancelB = new JButton("Cancel");
+	/**
+	 * The add button. If pressed, a sub-project is added with the specified
+	 * data.
+	 */
 	private JButton addB = new JButton("Add");
 
+	/**
+	 * The constructor for the dialog.
+	 *
+	 * @param frame
+	 *            The parent frame.
+	 * @param projectsTree
+	 *            The tree of projects to insert into.
+	 * @param parent
+	 *            The parent project node to insert under.
+	 */
 	public ProjectDialog(final Frame frame, final ProjectsTree projectsTree, final DefaultMutableTreeNode parent) {
 		// basic configuration
 		super(frame, true);
