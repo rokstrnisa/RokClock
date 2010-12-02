@@ -83,8 +83,13 @@ public class Analyser {
 		this.toDate = toDate;
 		BufferedReader br = new BufferedReader(new FileReader(logFilename));
 		String line;
+		int lineNumber = 0;
 		while ((line = br.readLine()) != null)
-			readLogEntry(line);
+			try {lineNumber++; readLogEntry(line);}
+			catch (Exception e) {
+				System.err.println("Could not process log entry on line "
+						+ lineNumber + ": \"" + line + "\"");
+			}
 		br.close();
 		return sums;
 	}
