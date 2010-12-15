@@ -300,7 +300,7 @@ class ProjectsTree extends JTree implements TimeLog {
 			String tooltip = child.getTooltip();
 			for (int j = 0; j < depth; j++) sb.append('\t');
 			sb.append(projectName);
-			if (!tooltip.isEmpty()) sb.append("{" + tooltip + "}");
+			if (tooltip != null && !tooltip.isEmpty()) sb.append("{" + tooltip + "}");
 			sb.append(nl);
 			saveChildrenOf(sb, child, depth + 1);
 		}
