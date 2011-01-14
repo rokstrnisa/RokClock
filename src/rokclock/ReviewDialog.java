@@ -38,6 +38,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 					DateChooser dc = new DateChooser(ReviewDialog.this, calendar);
 					if (dc.showDateChooser() == DateChooser.OK_OPTION) {
 						calendar = dc.getDate();
+						resetYearWeekComboBoxes();
 						refresh();
 						refreshReviewTable();
 					}
@@ -139,6 +140,53 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 */
 	private JLabel toLabel = new JLabel("To (exclusive):", SwingConstants.RIGHT);
 	/**
+	 * The label describing the 'year' combo box to its right.
+	 */
+	private JLabel yearLabel = new JLabel("Year:", SwingConstants.RIGHT);
+	/**
+	 * The label describing the 'week' combo box to its right.
+	 */
+	private JLabel weekLabel = new JLabel("Week:", SwingConstants.RIGHT) {{
+		setToolTipText("According to ISO 8601.");
+	}};
+	/**
+	 * The Gregorian calendar used for year-week selection.
+	 */
+	private GregorianCalendar yearWeekCalendar = new GregorianCalendar() {{
+		setMinimalDaysInFirstWeek(4);
+	}};
+	/**
+	 * The combo box used to display the year selection.
+	 */
+	private JComboBox yearCB = new JComboBox() {{
+		addItem("Custom");
+		int currentYear = yearWeekCalendar.get(GregorianCalendar.YEAR);
+		for (int year = currentYear - 5; year <= currentYear + 5; year++)
+			addItem(year);
+		addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				if (yearCB.getSelectedIndex() == 0) return;
+				yearWeekCalendar.set(GregorianCalendar.YEAR, (Integer) yearCB.getSelectedItem());
+				updateYearWeekDates();
+			}
+		});
+	}};
+	/**
+	 * The combo box used to display the week selection.
+	 */
+	private JComboBox weekCB = new JComboBox() {{
+		addItem("Custom");
+		for (int week = 1; week <= 52; week++)
+			addItem(week);
+		addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				if (weekCB.getSelectedIndex() == 0) return;
+				yearWeekCalendar.set(GregorianCalendar.WEEK_OF_YEAR, (Integer) weekCB.getSelectedItem());
+				updateYearWeekDates();
+			}
+		});
+	}};
+	/**
 	 * The 'from' date label.
 	 */
 	private DateLabel fromDate = new DateLabel();
@@ -182,14 +230,6 @@ class ReviewDialog extends JDialog implements CaretListener {
 		super(main, "Review & Save");
 		this.main = main;
 		this.config = config;
-		// obtain default dates
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.set(GregorianCalendar.HOUR_OF_DAY, 0);
-		calendar.set(GregorianCalendar.MINUTE, 0);
-		calendar.set(GregorianCalendar.SECOND, 0);
-		toDate.setDate(calendar);
-		calendar.add(GregorianCalendar.DAY_OF_MONTH, -7);
-		fromDate.setDate(calendar);
 		// layout date components
 		GridBagLayout gbl = new GridBagLayout();
 		setLayout(gbl);
@@ -197,27 +237,38 @@ class ReviewDialog extends JDialog implements CaretListener {
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets = new Insets(0, 0, 5, 0);
 		gbc.ipadx = 10;
-		gbc.gridx = gbc.gridy = 0;
+		gbc.gridx = 0; gbc.gridy = 0;
+		gbl.setConstraints(yearLabel, gbc);
+		gbc.gridx = 1;
+		gbl.setConstraints(yearCB, gbc);
+		gbc.gridx = 0; gbc.gridy = 1;
+		gbl.setConstraints(weekLabel, gbc);
+		gbc.gridx = 1;
+		gbl.setConstraints(weekCB, gbc);
+		gbc.gridx = 0; gbc.gridy = 2;
 		gbl.setConstraints(fromLabel, gbc);
 		gbc.weightx = 1;
 		gbc.gridx = 1;
 		gbl.setConstraints(fromDate, gbc);
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.weightx = 0;
-		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.gridx = 0; gbc.gridy = 3;
 		gbl.setConstraints(toLabel, gbc);
 		gbc.weightx = 1;
 		gbc.gridx = 1;
 		gbl.setConstraints(toDate, gbc);
-		gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+		gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
 		gbc.insets = new Insets(10, 5, 10, 5);
 		gbc.weighty = 1;
 		JScrollPane scrollReviewPanel = new JScrollPane(reviewPanel);
 		gbl.setConstraints(scrollReviewPanel, gbc);
 		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.gridy = 3;
-		gbc.weighty = 0;
+		gbc.gridy = 5; gbc.weighty = 0;
 		gbl.setConstraints(saveButton, gbc);
+		add(yearLabel);
+		add(yearCB);
+		add(weekLabel);
+		add(weekCB);
 		add(fromLabel);
 		add(fromDate);
 		add(toLabel);
@@ -225,9 +276,37 @@ class ReviewDialog extends JDialog implements CaretListener {
 		add(scrollReviewPanel);
 		add(saveButton);
 		// layout results
-		refreshReviewTable();
+		updateYearWeekDates();
 		setVisible(true);
 		setLocation(main.getLocation());
+	}
+
+	/**
+	 * Set calendar to this week's Monday; set year and week combo boxes to the
+	 * currently set date; set the date labels appropriately; and, refresh the
+	 * review table.
+	 */
+	private void updateYearWeekDates() {
+		yearWeekCalendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
+		yearWeekCalendar.set(GregorianCalendar.HOUR_OF_DAY, 0);
+		yearWeekCalendar.set(GregorianCalendar.MINUTE, 0);
+		yearWeekCalendar.set(GregorianCalendar.SECOND, 0);
+		yearWeekCalendar.set(GregorianCalendar.MILLISECOND, 0);
+		yearCB.setSelectedItem(yearWeekCalendar.get(GregorianCalendar.YEAR));
+		weekCB.setSelectedItem(yearWeekCalendar.get(GregorianCalendar.WEEK_OF_YEAR));
+		fromDate.setDate(yearWeekCalendar);
+		yearWeekCalendar.add(GregorianCalendar.DAY_OF_MONTH, 7);
+		toDate.setDate(yearWeekCalendar);
+		yearWeekCalendar.add(GregorianCalendar.DAY_OF_MONTH, -7);
+		refreshReviewTable();
+	}
+
+	/**
+	 * Set both year and week combo boxes to field "Custom".
+	 */
+	private void resetYearWeekComboBoxes() {
+		yearCB.setSelectedIndex(0);
+		weekCB.setSelectedIndex(0);
 	}
 
 	/**
@@ -409,11 +488,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String defaultFilename = "time-sheet-"
-						+ dateFormat.format(fromDate.getDate()) + "-"
-						+ dateFormat.format(toDate.getDate()) + ".txt";
-				defaultFilename = defaultFilename.replaceAll("/", "");
-				fileChooser.setSelectedFile(new File(defaultFilename));
+				fileChooser.setSelectedFile(new File(getDefaultFilename()));
 				int returnValue = fileChooser.showDialog(ReviewDialog.this, "Save");
 				if (returnValue != JFileChooser.APPROVE_OPTION) return;
 				writeToFile(fileChooser.getSelectedFile());
@@ -421,6 +496,24 @@ class ReviewDialog extends JDialog implements CaretListener {
 			}
 		});
 		return b;
+	}
+
+	/**
+	 * Create a default filename given the current date selection. If custom
+	 * dates are selected, use those dates; otherwise, use year and week
+	 * numbers.
+	 *
+	 * @return The default filename.
+	 */
+	private String getDefaultFilename() {
+		if (yearCB.getSelectedIndex() == 0 || weekCB.getSelectedIndex() == 0)
+			return "timesheet-"
+					+ dateFormat.format(fromDate.getDate()).replaceAll("/", "")
+					+ "-"
+					+ dateFormat.format(toDate.getDate()).replaceAll("/", "")
+					+ ".txt";
+		return "timesheet-" + yearCB.getSelectedItem() + "wk"
+				+ weekCB.getSelectedItem() + ".txt";
 	}
 
 	/**
