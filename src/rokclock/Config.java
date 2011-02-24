@@ -21,15 +21,19 @@ class Config {
 	/**
 	 * The name of the configuration file.
 	 */
-	private final String configFilename = "config.txt";
+	private final String userConfigFilename = "config.txt";
 	/**
 	 * The name of the default (template) configuration file.
 	 */
-	private final String configFilenameDefault = configFilename + ".default";
+	private final String defaultConfigFilename = userConfigFilename + ".default";
 	/**
-	 * The properties stored within the configuration file.
+	 * The properties stored within the default configuration file.
 	 */
-	private final Properties properties = new Properties();
+	private final Properties defaultProperties = new Properties();
+	/**
+	 * The properties stored within the user's configuration file.
+	 */
+	private final Properties userProperties = new Properties();
 	/**
 	 * The user's home directory. Used to replace tilde symbols in any
 	 * user-specified path.
@@ -55,10 +59,12 @@ class Config {
 	 *             configuration file fails.
 	 */
 	Config() throws IOException {
-		File configFile = new File(configFilename);
-		if (!configFile.exists())
-			Main.copyFile(new File(configFilenameDefault), configFile);
-		properties.load(new FileInputStream(configFile));
+		File defaultConfigFile = new File(defaultConfigFilename);
+		File userConfigFile = new File(userConfigFilename);
+		if (!userConfigFile.exists())
+			Main.copyFile(defaultConfigFile, userConfigFile);
+		defaultProperties.load(new FileInputStream(defaultConfigFile));
+		userProperties.load(new FileInputStream(userConfigFile));
 		USER_HOME = System.getProperty("user.home");
 	}
 
@@ -68,7 +74,7 @@ class Config {
 	 * @return The projects' file name.
 	 */
 	String getProjectsFilename() {
-		return processFilePath(get("projectsFilename", "projects.txt"));
+		return processFilePath(get("projectsFilename", String.class));
 	}
 
 	/**
@@ -88,7 +94,17 @@ class Config {
 	 * @return The name of the log file.
 	 */
 	String getLogFilename() {
-		return processFilePath(get("logFilename", "log.txt"));
+		return processFilePath(get("logFilename", String.class));
+	}
+
+	/**
+	 * Obtains the absolute file address for the hub where to accumulate data
+	 * from all users.
+	 *
+	 * @return The file address of the hub.
+	 */
+	String getHub() {
+		return get("hub", String.class);
 	}
 
 	/**
@@ -97,7 +113,7 @@ class Config {
 	 * @return The interval in seconds.
 	 */
 	int getIntervalInSeconds() {
-		return get("intervalInSeconds", 3600);
+		return get("intervalInSeconds", Integer.class);
 	}
 
 	/**
@@ -106,7 +122,7 @@ class Config {
 	 * @return The wait period in seconds.
 	 */
 	int getWaitInSeconds() {
-		return get("waitInSeconds", 3600);
+		return get("waitInSeconds", Integer.class);
 	}
 
 	/**
@@ -115,7 +131,7 @@ class Config {
 	 * @return One of the {@link AutoCountTowards} options.
 	 */
 	AutoCountTowards getAutoCountTowards() {
-		return get(AutoCountTowards.class, AutoCountTowards.PREVIOUS);
+		return get(AutoCountTowards.class);
 	}
 
 	/**
@@ -124,7 +140,7 @@ class Config {
 	 * @return One of the {@link Behaviour} options.
 	 */
 	Behaviour getBehaviour() {
-		return get(Behaviour.class, Behaviour.MINIMISE);
+		return get(Behaviour.class);
 	}
 
 	/**
@@ -134,7 +150,7 @@ class Config {
 	 * @return Whether timeouts should be written.
 	 */
 	boolean getWriteTimeouts() {
-		return get("writeTimeouts", false);
+		return get("writeTimeouts", Boolean.class);
 	}
 
 	/**
@@ -152,7 +168,7 @@ class Config {
 	 * @return Starting X coordinate.
 	 */
 	int getLocX() {
-		return get("locX", 400);
+		return get("locX", Integer.class);
 	}
 
 	/**
@@ -161,7 +177,7 @@ class Config {
 	 * @return Starting Y coordinate.
 	 */
 	int getLocY() {
-		return get("locY", 400);
+		return get("locY", Integer.class);
 	}
 
 	/**
@@ -170,7 +186,7 @@ class Config {
 	 * @return Starting width.
 	 */
 	int getWidth() {
-		return get("width", 150);
+		return get("width", Integer.class);
 	}
 
 	/**
@@ -179,7 +195,7 @@ class Config {
 	 * @return Starting height.
 	 */
 	int getHeight() {
-		return get("height", 400);
+		return get("height", Integer.class);
 	}
 
 	/**
@@ -188,7 +204,7 @@ class Config {
 	 * @return The default colour.
 	 */
 	Color getDefaultColor() {
-		return get("defaultColor", Color.GREEN);
+		return get("defaultColor", Color.class);
 	}
 
 	/**
@@ -197,7 +213,7 @@ class Config {
 	 * @return The active colour.
 	 */
 	Color getActiveColor() {
-		return get("activeColor", Color.RED);
+		return get("activeColor", Color.class);
 	}
 
 	/**
@@ -206,70 +222,101 @@ class Config {
 	 * @return The semi-active colour.
 	 */
 	Color getSemiActiveColor() {
-		return get("semiActiveColor", Color.CYAN);
+		return get("semiActiveColor", Color.class);
 	}
 
 	/**
-	 * A generic method for obtaining values from the configuration file. The
-	 * type of the value required is determined from the type of the default
-	 * value provided.
+	 * A generic method for obtaining values from either the user or the default
+	 * configuration file. The type of the value required is determined from the
+	 * class object provided.
 	 *
 	 * @param <T>
 	 *            The inferred generic type of the value required.
 	 * @param key
 	 *            The name of the property.
-	 * @param defaultValue
-	 *            The default value.
+	 * @param c
+	 *            The class of which value we want to obtain.
 	 * @return The resulting value.
 	 */
-	@SuppressWarnings("unchecked")
-	private <T> T get(String key, T defaultValue) {
-		String v = properties.getProperty(key);
-		try {
-			if (v == null)
-				return defaultValue;
-			if (defaultValue instanceof String)
-				return (T) v;
-			if (defaultValue instanceof Boolean)
-				return (T) Boolean.valueOf(v);
-			if (defaultValue instanceof Integer)
-				return (T) Integer.valueOf(v);
-			if (defaultValue instanceof Color) {
-				String[] rgb = v.split(",");
-				return (T) new Color(Integer.parseInt(rgb[0]), Integer
-						.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
-			}
-		} catch (Exception e) {
-			System.err.println("Couldn't parse "
-					+ defaultValue.getClass().getSimpleName().toLowerCase()
-					+ " specification for '" + key + "': " + v);
-		}
-		return defaultValue;
+	private <T> T get(String key, Class<T> c) {
+		final T userValue = getPropertyFrom(userProperties, key, c);
+		return userValue != null ? userValue : getPropertyFrom(defaultProperties, key, c);
 	}
 
 	/**
-	 * A generic method for obtaining a value from the configuration file where
-	 * the value that corresponds to an enumeration member.
+	 * A generic method for obtaining values from the specified configuration
+	 * file. The type of the value required is determined from the class object
+	 * provided.
+	 *
+	 * @param <T>
+	 *            The inferred generic type of the value required.
+	 * @param key
+	 *            The name of the property.
+	 * @param c
+	 *            The class of which value we want to obtain.
+	 * @return The resulting value.
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> T getPropertyFrom(Properties p, String key, Class<T> c) {
+		String v = p.getProperty(key);
+		if (v != null)
+			try {
+				if (c == String.class)
+					return (T) v;
+				if (c == Boolean.class)
+					return (T) Boolean.valueOf(v);
+				if (c == Integer.class)
+					return (T) Integer.valueOf(v);
+				if (c == Color.class) {
+					String[] rgb = v.split(",");
+					return (T) new Color(Integer.parseInt(rgb[0]), Integer
+							.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+				}
+			} catch (Exception e) {
+				System.err.println("Couldn't parse "
+						+ c.getSimpleName().toLowerCase()
+						+ " specification for '" + key + "': " + v);
+			}
+		return null;
+	}
+
+	/**
+	 * A generic method for obtaining a value from the user or the default
+	 * configuration file where the value that corresponds to an enumeration
+	 * member.
 	 *
 	 * @param <T>
 	 *            The inferred enumeration type.
 	 * @param c
 	 *            The enumeration class of which value we want to obtain.
-	 * @param defaultValue
-	 *            The default value.
 	 * @return The resulting value.
 	 */
-	private <T extends Enum<T>> T get(Class<T> c, T defaultValue) {
+	private <T extends Enum<T>> T get(Class<T> c) {
+		final T userValue = getPropertyFrom(userProperties,  c);
+		return userValue != null ? userValue : getPropertyFrom(defaultProperties, c);
+	}
+
+	/**
+	 * A generic method for obtaining a value from the specified properties file
+	 * where the value that corresponds to an enumeration member.
+	 *
+	 * @param <T>
+	 *            The inferred enumeration type.
+	 * @param p
+	 *            The properties file to obtain the value from.
+	 * @param c
+	 *            The enumeration class of which value we want to obtain.
+	 * @return The resulting value.
+	 */
+	private <T extends Enum<T>> T getPropertyFrom(Properties p, Class<T> c) {
 		String propertyName = c.getSimpleName();
 		propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
-		String defaultValueS = defaultValue.toString().toLowerCase();
-		String value = get(propertyName, defaultValueS).toUpperCase();
-		T result = defaultValue;
+		String value = getPropertyFrom(p, propertyName, String.class).toUpperCase();
+		T result = null;
 		try {result = Enum.valueOf(c, value);}
 		catch (IllegalArgumentException e) {
 			System.err.println("Could not recognise the specified option for '"
-					+ propertyName + "': "
-					+ properties.getProperty("behaviour"));
+					+ propertyName + "': " + value);
 		}
 		return result;
 	}

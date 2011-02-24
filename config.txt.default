@@ -14,3 +14,4 @@ autoCountTowards=previous
 writeTimeouts=false
 logFilename=log.txt
 projectsFilename=projects.txt
+hub=/home/roks/actuals
