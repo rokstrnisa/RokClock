@@ -97,6 +97,10 @@ class Config {
 		return processFilePath(get("logFilename", String.class));
 	}
 
+	boolean getUseHub() {
+		return get("useHub", Boolean.class);
+	}
+
 	/**
 	 * Obtains the absolute file address for the hub where to accumulate data
 	 * from all users.
@@ -160,6 +164,30 @@ class Config {
 	 */
 	String getTitle() {
 		return "RokClock";
+	}
+
+	/**
+	 * Obtains user's team.
+	 *
+	 * @return User's team.
+	 */
+	String getTeam() {
+		return get("team", String.class);
+	}
+
+	/**
+	 * Sets the user's team setting to the specified value.
+	 *
+	 * @param team
+	 *            The specified team value.
+	 */
+	void setTeam(String team) {
+		userProperties.setProperty("team", team);
+		try {
+			userProperties.store(new FileOutputStream(userConfigFilename), null);
+		} catch (IOException e) {
+			System.err.println("Could not save the user configuration file.");
+		}
 	}
 
 	/**

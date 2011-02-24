@@ -14,4 +14,6 @@ autoCountTowards=previous
 writeTimeouts=false
 logFilename=log.txt
 projectsFilename=projects.txt
+useHub=true
 hub=/home/roks/actuals
+team=undefined

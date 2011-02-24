@@ -210,7 +210,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 	/**
 	 * The button used to save the results into a file.
 	 */
-	private JButton saveButton = createSaveButton();
+	private JButton saveToFileButton = createSaveToFileButton();
 	/**
 	 * The file chooser used to choose the file to save to.
 	 */
@@ -264,7 +264,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 		gbl.setConstraints(scrollReviewPanel, gbc);
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridy = 5; gbc.weighty = 0;
-		gbl.setConstraints(saveButton, gbc);
+		gbl.setConstraints(saveToFileButton, gbc);
 		add(yearLabel);
 		add(yearCB);
 		add(weekLabel);
@@ -274,7 +274,16 @@ class ReviewDialog extends JDialog implements CaretListener {
 		add(toLabel);
 		add(toDate);
 		add(scrollReviewPanel);
-		add(saveButton);
+		add(saveToFileButton);
+		// hub panel section
+		if (config.getUseHub()) {
+			HubPanel hubPanel = new HubPanel(this, config);
+			if (hubPanel.isReady()) {
+				gbc.gridy = 6; gbc.weighty = 0;
+				gbl.setConstraints(hubPanel, gbc);
+				add(hubPanel);
+			}
+		}
 		// layout results
 		updateYearWeekDates();
 		setVisible(true);
@@ -480,10 +489,10 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 * The function creates a button, which opens a file chooser and writes a
 	 * summary of the displayed results into a user-selected file.
 	 *
-	 * @return The save button.
+	 * @return The 'save to file' button.
 	 */
-	private JButton createSaveButton() {
-		JButton b = new JButton("SAVE");
+	private JButton createSaveToFileButton() {
+		JButton b = new JButton("SAVE TO FILE");
 		b.setBackground(Color.BLACK);
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
@@ -496,6 +505,27 @@ class ReviewDialog extends JDialog implements CaretListener {
 			}
 		});
 		return b;
+	}
+
+	/**
+	 * Checks whether the interval has been set using the date chooser.
+	 *
+	 * @return True if custom.
+	 */
+	boolean isIntervalCustom() {
+		return yearCB.getSelectedIndex() == 0 || weekCB.getSelectedIndex() == 0;
+	}
+
+	/**
+	 * Returns the unique ID of a week prefixed with the year.
+	 *
+	 * @return Selected week's ID.
+	 */
+	String getSelectedWeekID() {
+		String weekNo = weekCB.getSelectedItem().toString();
+		if (weekNo.length() == 1)
+			weekNo = "0" + weekNo;
+		return yearCB.getSelectedItem() + "wk" + weekNo;
 	}
 
 	/**
@@ -523,9 +553,11 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 * @param f
 	 *            The file to write to.
 	 */
-	private void writeToFile(File f) {
+	public void writeToFile(File f) {
 		final String nl = "\r\n";
 		try {
+			f.getParentFile().mkdirs();
+			f.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			double total = Double.parseDouble(totalLabel.getText());
 			for (Entry<String, Row> entry : rows.entrySet()) {
