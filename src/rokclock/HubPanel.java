@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 
@@ -25,7 +24,7 @@ class HubPanel extends JPanel {
 		this.baseAddress = config.getHub();
 		// filling in data
 		try {
-			for (String team : fetchTeams())
+			for (String team : config.fetchTeams())
 				teamCB.addItem(team);
 			teamCB.setSelectedItem(config.getTeam());
 		} catch (IOException e) {
@@ -84,19 +83,25 @@ class HubPanel extends JPanel {
 				int random = findFreshRandom(weekDir);
 				File logFile = new File(weekDir + "/" + random + ".log");
 				reviewDialog.writeToFile(logFile);
+				File submittedFile = new File(weekDir + "/submitted.txt");
+				try {
+					String user = System.getenv("USER");
+					String date = Config.df.format(new Date());
+					BufferedWriter bw = new BufferedWriter(new FileWriter(submittedFile, true));
+					bw.write(random + "," + user + "," + date + "\r\n");
+					bw.close();
+				} catch (IOException ex) {
+					JOptionPane.showMessageDialog(reviewDialog,
+							ex.getMessage(), "Error occurred",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				JOptionPane.showMessageDialog(reviewDialog,
+						"Data successfully saved to the hub.", "Success",
+						JOptionPane.INFORMATION_MESSAGE);
+				reviewDialog.setVisible(false);
 			}
 		});
 		return b;
-	}
-
-	private List<String> fetchTeams() throws IOException {
-		final List<String> teamList = new ArrayList<String>();
-		File teamsFile = new File(baseAddress + "/settings/teams.txt");
-		BufferedReader br = new BufferedReader(new FileReader(teamsFile));
-		String line = null;
-		while ((line = br.readLine()) != null)
-			teamList.add(line);
-		return teamList;
 	}
 
 	private int findFreshRandom(String weekDir) {
