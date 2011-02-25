@@ -3,13 +3,13 @@ package rokclock;
 import java.awt.Color;
 import java.io.*;
 import java.text.*;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This class encapsulates all configuration settings, most of which can be
  * user-specified.
  */
-class Config {
+public class Config {
 	/**
 	 * The string definition of the date-format {@link #df}.
 	 */
@@ -58,7 +58,7 @@ class Config {
 	 *             Thrown if either the copying or the reading of the
 	 *             configuration file fails.
 	 */
-	Config() throws IOException {
+	public Config() throws IOException {
 		File defaultConfigFile = new File(defaultConfigFilename);
 		File userConfigFile = new File(userConfigFilename);
 		if (!userConfigFile.exists())
@@ -107,7 +107,7 @@ class Config {
 	 *
 	 * @return The file address of the hub.
 	 */
-	String getHub() {
+	public String getHub() {
 		return get("hub", String.class);
 	}
 
@@ -359,5 +359,23 @@ class Config {
 	 */
 	private String processFilePath(String path) {
 		return path.replace("~", USER_HOME);
+	}
+
+	/**
+	 * Fetches a list of pre-defined teams specified in the
+	 * <code>settings/teams.txt</code> file at the hub's location.
+	 *
+	 * @return The list of pre-defined team.
+	 * @throws IOException
+	 *             Thrown if problems when reading the file.
+	 */
+	public List<String> fetchTeams() throws IOException {
+		final List<String> teamList = new ArrayList<String>();
+		File teamsFile = new File(getHub() + "/settings/teams.txt");
+		BufferedReader br = new BufferedReader(new FileReader(teamsFile));
+		String line = null;
+		while ((line = br.readLine()) != null)
+			teamList.add(line);
+		return teamList;
 	}
 }

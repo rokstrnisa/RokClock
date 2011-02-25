@@ -556,7 +556,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 	public void writeToFile(File f) {
 		final String nl = "\r\n";
 		try {
-			f.getParentFile().mkdirs();
+			// f.getParentFile().mkdirs();
 			f.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			double total = Double.parseDouble(totalLabel.getText());
