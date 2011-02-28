@@ -85,11 +85,15 @@ class HubPanel extends JPanel {
 				String weekDir = baseAddress + "/raw/" + team + "/" + weekID + "/";
 				int random = findFreshRandom(weekDir);
 				File logFile = new File(weekDir + "/" + random + ".log");
-				reviewDialog.writeToFile(logFile);
 				File submittedFile = new File(weekDir + "/submitted.txt");
 				try {
 					String user = config.getUsernameOnHub();
+					if (user.equals("undefined"))
+						throw new IOException(
+								"Please set the property 'usernameOnHub' in RokClock's 'config.txt' to your unix username (on the filesystem that contains '"
+								+ baseAddress + "').");
 					String date = Config.df.format(new Date());
+					reviewDialog.writeToFile(logFile);
 					BufferedWriter bw = new BufferedWriter(new FileWriter(submittedFile, true));
 					bw.write(random + "," + user + "," + date + "\r\n");
 					bw.close();
@@ -97,6 +101,7 @@ class HubPanel extends JPanel {
 					JOptionPane.showMessageDialog(reviewDialog,
 							ex.getMessage(), "Error occurred",
 							JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				JOptionPane.showMessageDialog(reviewDialog,
 						"Data successfully saved to the hub.", "Success",
