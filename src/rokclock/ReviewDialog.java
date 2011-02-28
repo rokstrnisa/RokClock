@@ -277,7 +277,6 @@ class ReviewDialog extends JDialog implements CaretListener {
 		add(toLabel);
 		add(toDate);
 		add(scrollReviewPanel);
-		add(saveToFileButton);
 		// hub panel section
 		if (config.getUseHub()) {
 			HubPanel hubPanel = new HubPanel(this, config);
@@ -286,7 +285,8 @@ class ReviewDialog extends JDialog implements CaretListener {
 				gbl.setConstraints(hubPanel, gbc);
 				add(hubPanel);
 			}
-		}
+		} else
+			add(saveToFileButton);
 		// layout results
 		updateYearWeekDates();
 		setVisible(true);

@@ -178,7 +178,7 @@ public class Postprocessor {
 		week.reported = reported;
 		week.missing = week.headcount - week.reported;
 	}
-	
+
 	private void outputTeamTotals() {
 		SortedSet<String> weeks = new TreeSet<String>(combinedActuals.keySet());
 		// week names
@@ -200,7 +200,10 @@ public class Postprocessor {
 			Actuals actuals = teamEntry.getValue();
 			for (String project : actuals.allProjects) {
 				out.print(team + "," + project + ",");
-				for (String week : weeks) out.print(actuals.get(week).get(project) + ",");
+				for (String week : weeks) {
+					Float weekData = actuals.get(week).get(project);
+					out.print((weekData == null ? 0 : weekData) + ",");
+				}
 				out.println();
 			}
 			out.println();
@@ -225,7 +228,10 @@ public class Postprocessor {
 		out.println("\n,Code");
 		for (String project : combinedActuals.allProjects) {
 			out.print("," + project + ",");
-			for (String week : weeks) out.print(combinedActuals.get(week).get(project) + ",");
+			for (String week : weeks) {
+				Float weekData = combinedActuals.get(week).get(project);
+				out.print((weekData == null ? 0 : weekData) + ",");
+			}
 			out.println();
 		}
 	}
