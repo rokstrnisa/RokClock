@@ -34,6 +34,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 			setToolTipText("Click to change.");
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					DateChooser dc = new DateChooser(ReviewDialog.this, calendar);
 					if (dc.showDateChooser() == DateChooser.OK_OPTION) {
@@ -97,7 +98,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 		 */
 		Row() {
 			hoursTF.addCaretListener(ReviewDialog.this);
-			hoursTF.setHorizontalAlignment(JTextField.RIGHT);
+			hoursTF.setHorizontalAlignment(SwingConstants.RIGHT);
 		}
 	}
 
@@ -160,13 +161,14 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 */
 	private JComboBox yearCB = new JComboBox() {{
 		addItem("Custom");
-		int currentYear = yearWeekCalendar.get(GregorianCalendar.YEAR);
+		int currentYear = yearWeekCalendar.get(Calendar.YEAR);
 		for (int year = currentYear - 5; year <= currentYear + 5; year++)
 			addItem(year);
 		addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent ae) {
 				if (yearCB.getSelectedIndex() == 0) return;
-				yearWeekCalendar.set(GregorianCalendar.YEAR, (Integer) yearCB.getSelectedItem());
+				yearWeekCalendar.set(Calendar.YEAR, (Integer) yearCB.getSelectedItem());
 				updateYearWeekDates();
 			}
 		});
@@ -179,9 +181,10 @@ class ReviewDialog extends JDialog implements CaretListener {
 		for (int week = 1; week <= 52; week++)
 			addItem(week);
 		addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent ae) {
 				if (weekCB.getSelectedIndex() == 0) return;
-				yearWeekCalendar.set(GregorianCalendar.WEEK_OF_YEAR, (Integer) weekCB.getSelectedItem());
+				yearWeekCalendar.set(Calendar.WEEK_OF_YEAR, (Integer) weekCB.getSelectedItem());
 				updateYearWeekDates();
 			}
 		});
@@ -296,17 +299,17 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 * review table.
 	 */
 	private void updateYearWeekDates() {
-		yearWeekCalendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
-		yearWeekCalendar.set(GregorianCalendar.HOUR_OF_DAY, 0);
-		yearWeekCalendar.set(GregorianCalendar.MINUTE, 0);
-		yearWeekCalendar.set(GregorianCalendar.SECOND, 0);
-		yearWeekCalendar.set(GregorianCalendar.MILLISECOND, 0);
-		yearCB.setSelectedItem(yearWeekCalendar.get(GregorianCalendar.YEAR));
-		weekCB.setSelectedItem(yearWeekCalendar.get(GregorianCalendar.WEEK_OF_YEAR));
+		yearWeekCalendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		yearWeekCalendar.set(Calendar.HOUR_OF_DAY, 0);
+		yearWeekCalendar.set(Calendar.MINUTE, 0);
+		yearWeekCalendar.set(Calendar.SECOND, 0);
+		yearWeekCalendar.set(Calendar.MILLISECOND, 0);
+		yearCB.setSelectedItem(yearWeekCalendar.get(Calendar.YEAR));
+		weekCB.setSelectedItem(yearWeekCalendar.get(Calendar.WEEK_OF_YEAR));
 		fromDate.setDate(yearWeekCalendar);
-		yearWeekCalendar.add(GregorianCalendar.DAY_OF_MONTH, 7);
+		yearWeekCalendar.add(Calendar.DAY_OF_MONTH, 7);
 		toDate.setDate(yearWeekCalendar);
-		yearWeekCalendar.add(GregorianCalendar.DAY_OF_MONTH, -7);
+		yearWeekCalendar.add(Calendar.DAY_OF_MONTH, -7);
 		refreshReviewTable();
 	}
 
@@ -496,6 +499,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 		b.setBackground(Color.BLACK);
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileChooser.setSelectedFile(new File(getDefaultFilename()));
 				int returnValue = fileChooser.showDialog(ReviewDialog.this, "Save");
@@ -538,12 +542,12 @@ class ReviewDialog extends JDialog implements CaretListener {
 	private String getDefaultFilename() {
 		if (yearCB.getSelectedIndex() == 0 || weekCB.getSelectedIndex() == 0)
 			return "timesheet-"
-					+ dateFormat.format(fromDate.getDate()).replaceAll("/", "")
-					+ "-"
-					+ dateFormat.format(toDate.getDate()).replaceAll("/", "")
-					+ ".txt";
+			+ dateFormat.format(fromDate.getDate()).replaceAll("/", "")
+			+ "-"
+			+ dateFormat.format(toDate.getDate()).replaceAll("/", "")
+			+ ".txt";
 		return "timesheet-" + yearCB.getSelectedItem() + "wk"
-				+ weekCB.getSelectedItem() + ".txt";
+		+ weekCB.getSelectedItem() + ".txt";
 	}
 
 	/**
@@ -569,6 +573,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 		} catch (IOException e) {e.printStackTrace();}
 	}
 
+	@Override
 	public void caretUpdate(CaretEvent e) {
 		recomputeTotal();
 	}
