@@ -16,4 +16,5 @@ logFilename=log.txt
 projectsFilename=projects.txt
 useHub=false
 hub=/home/roks/actuals
+usernameOnHub=undefined
 team=undefined

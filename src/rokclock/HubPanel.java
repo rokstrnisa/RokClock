@@ -15,13 +15,14 @@ class HubPanel extends JPanel {
 	private final JLabel teamLabel = new JLabel("Team:", SwingConstants.RIGHT);
 	private final JComboBox teamCB = new JComboBox();
 	private final JCheckBox defaultTeamCB = new JCheckBox("Set as default.", null, true);
-	private final JButton submitButton = createSubmitButton();
+	private final JButton submitButton;
 	private boolean ready = false;
 
 	HubPanel(final ReviewDialog reviewDialog, Config config) {
 		this.reviewDialog = reviewDialog;
 		this.config = config;
 		this.baseAddress = config.getHub();
+		submitButton = createSubmitButton();
 		// filling in data
 		try {
 			for (String team : config.fetchTeams())
@@ -61,6 +62,7 @@ class HubPanel extends JPanel {
 	 */
 	private JButton createSubmitButton() {
 		JButton b = new JButton("SUBMIT TO HUB");
+		b.setToolTipText("Save the above percentages into the specified hub location ('" + config.getHub() + "').");
 		b.setBackground(Color.BLACK);
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
@@ -68,12 +70,12 @@ class HubPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (reviewDialog.isIntervalCustom()) {
 					JOptionPane
-							.showMessageDialog(
-									reviewDialog,
-									"Please specify the interval only through year/week selection. "
-											+ "Custom date selection is not supported when using the hub.",
-									"No custom dates",
-									JOptionPane.ERROR_MESSAGE);
+					.showMessageDialog(
+							reviewDialog,
+							"Please specify the interval only through year/week selection. "
+							+ "Custom date selection is not supported when using the hub.",
+							"No custom dates",
+							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				String team = teamCB.getSelectedItem().toString();
@@ -86,7 +88,7 @@ class HubPanel extends JPanel {
 				reviewDialog.writeToFile(logFile);
 				File submittedFile = new File(weekDir + "/submitted.txt");
 				try {
-					String user = System.getenv("USER");
+					String user = config.getUsernameOnHub();
 					String date = Config.df.format(new Date());
 					BufferedWriter bw = new BufferedWriter(new FileWriter(submittedFile, true));
 					bw.write(random + "," + user + "," + date + "\r\n");

@@ -112,6 +112,16 @@ public class Config {
 	}
 
 	/**
+	 * Obtains the current user's username at the specified hub. This is used
+	 * for logging purposes.
+	 *
+	 * @return The user's username.
+	 */
+	public String getUsernameOnHub() {
+		return get("usernameOnHub", String.class);
+	}
+
+	/**
 	 * Obtains the interval in seconds of the active period. Default is 3600.
 	 *
 	 * @return The interval in seconds.
@@ -305,7 +315,7 @@ public class Config {
 						+ c.getSimpleName().toLowerCase()
 						+ " specification for '" + key + "': " + v);
 			}
-		return null;
+			return null;
 	}
 
 	/**
