@@ -56,11 +56,13 @@ class ProjectDialog extends JDialog {
 		setTitle("Address Dialog");
 		// button semantics
 		cancelB.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				ProjectDialog.this.setVisible(false);
 			}
 		});
 		addB.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String projectName = projectNameTF.getText().trim();
 				if (projectName.isEmpty())

@@ -60,6 +60,7 @@ class ProjectTreeCellRenderer implements TreeCellRenderer {
 		closedIcon = defaultRenderer.getDefaultClosedIcon();
 	}
 	
+	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean sel, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {

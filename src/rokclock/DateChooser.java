@@ -88,7 +88,7 @@ class DateChooser extends JDialog implements ActionListener {
 		// build the panel with month name and navigation buttons
 		monthPane.add(navButton[0] = new JButton("<"));
 		monthPane.add(monthLabel = new JLabel(String.valueOf(monthNames
-				.get(date.get(GregorianCalendar.MONTH))), JLabel.CENTER));
+				.get(date.get(Calendar.MONTH))), SwingConstants.CENTER));
 		monthLabel.setMinimumSize(new Dimension(80, 17));
 		monthLabel.setMaximumSize(new Dimension(80, 17));
 		monthLabel.setPreferredSize(new Dimension(80, 17));
@@ -97,7 +97,7 @@ class DateChooser extends JDialog implements ActionListener {
 		// build the panel with year and navigation buttons
 		yearPane.add(navButton[2] = new JButton("<<"));
 		yearPane.add(yearLabel = new JLabel(String.valueOf(date
-				.get(GregorianCalendar.YEAR)), JLabel.CENTER),
+				.get(Calendar.YEAR)), SwingConstants.CENTER),
 				BorderLayout.CENTER);
 		yearLabel.setMinimumSize(new Dimension(50, 17));
 		yearLabel.setMaximumSize(new Dimension(50, 17));
@@ -157,6 +157,7 @@ class DateChooser extends JDialog implements ActionListener {
 		return ready ? OK_OPTION : CANCEL_OPTION;
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent ev) {
 		String label = ((JButton) ev.getSource()).getText();
 
@@ -227,38 +228,38 @@ class DateChooser extends JDialog implements ActionListener {
 		int offset = 0;
 
 		// decide what day of the week is the first day of this month
-		switch (temp.get(GregorianCalendar.DAY_OF_WEEK)) {
-			case GregorianCalendar.MONDAY:
+		switch (temp.get(Calendar.DAY_OF_WEEK)) {
+			case Calendar.MONDAY:
 				offset = 0;
 				break;
-			case GregorianCalendar.TUESDAY:
+			case Calendar.TUESDAY:
 				offset = 1;
 				break;
-			case GregorianCalendar.WEDNESDAY:
+			case Calendar.WEDNESDAY:
 				offset = 2;
 				break;
-			case GregorianCalendar.THURSDAY:
+			case Calendar.THURSDAY:
 				offset = 3;
 				break;
-			case GregorianCalendar.FRIDAY:
+			case Calendar.FRIDAY:
 				offset = 4;
 				break;
-			case GregorianCalendar.SATURDAY:
+			case Calendar.SATURDAY:
 				offset = 5;
 				break;
-			case GregorianCalendar.SUNDAY:
+			case Calendar.SUNDAY:
 				offset = 6;
 				break;
 		}
 
 		// display 7 days of the week across the top
-		dayGrid.add(new JLabel("Mon", JLabel.CENTER));
-		dayGrid.add(new JLabel("Tue", JLabel.CENTER));
-		dayGrid.add(new JLabel("Wed", JLabel.CENTER));
-		dayGrid.add(new JLabel("Thu", JLabel.CENTER));
-		dayGrid.add(new JLabel("Fri", JLabel.CENTER));
-		dayGrid.add(new JLabel("Sat", JLabel.CENTER));
-		dayGrid.add(new JLabel("Sun", JLabel.CENTER));
+		dayGrid.add(new JLabel("Mon", SwingConstants.CENTER));
+		dayGrid.add(new JLabel("Tue", SwingConstants.CENTER));
+		dayGrid.add(new JLabel("Wed", SwingConstants.CENTER));
+		dayGrid.add(new JLabel("Thu", SwingConstants.CENTER));
+		dayGrid.add(new JLabel("Fri", SwingConstants.CENTER));
+		dayGrid.add(new JLabel("Sat", SwingConstants.CENTER));
+		dayGrid.add(new JLabel("Sun", SwingConstants.CENTER));
 
 		// skip to the correct first day of the week for this month
 		for (int i = 1; i <= offset; i++)

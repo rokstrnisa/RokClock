@@ -52,7 +52,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		public String getTooltip() {
 			return tooltip;
 		}
-		
+
 		/**
 		 * Obtains the label associated with this node.
 		 *
@@ -146,11 +146,12 @@ class ProjectsTree extends JTree implements TimeLog {
 		setCellRenderer(new ProjectTreeCellRenderer(this, config));
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				switch (e.getButton()) {
-					case MouseEvent.BUTTON1: onLeftMouseClick(e); break;
-					case MouseEvent.BUTTON2: onMiddleMouseClick(e); break;
-					case MouseEvent.BUTTON3: onRightMouseClick(e); break;
+				case MouseEvent.BUTTON1: onLeftMouseClick(e); break;
+				case MouseEvent.BUTTON2: onMiddleMouseClick(e); break;
+				case MouseEvent.BUTTON3: onRightMouseClick(e); break;
 				}
 			}
 		});
@@ -159,6 +160,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		frame.add(createPopupMenu());
 	}
 
+	@Override
 	public String getToolTipText(MouseEvent e) {
 		if (getRowForLocation(e.getX(), e.getY()) == -1)
 			return null;
@@ -176,6 +178,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		popupMenu = new PopupMenu();
 		MenuItem deleteMI = new MenuItem("Delete");
 		deleteMI.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				MutableTreeNode node = (MutableTreeNode) lastRightClickedPath.getLastPathComponent();
 				model.removeNodeFromParent(node);
@@ -185,6 +188,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		});
 		MenuItem addChildMI = new MenuItem("Add child to");
 		addChildMI.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) lastRightClickedPath.getLastPathComponent();
 				new ProjectDialog(frame, ProjectsTree.this, parent).setVisible(true);
@@ -347,6 +351,7 @@ class ProjectsTree extends JTree implements TimeLog {
 	 */
 	private Timer createTimer() {
 		Timer t = new Timer(config.getIntervalInSeconds() * 1000, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				doPeriodicAction();
 			}
@@ -413,6 +418,7 @@ class ProjectsTree extends JTree implements TimeLog {
 			popupMenu.show(frame, e.getX(), e.getY());
 	}
 
+	@Override
 	public void startRecording(String[] projectPath) throws Exception {
 		if (state != State.STOPPED) stopRecording();
 		currentProjectPath = projectPath;
@@ -420,16 +426,17 @@ class ProjectsTree extends JTree implements TimeLog {
 		switchToActiveState(projectPath);
 	}
 
+	@Override
 	public void stopRecording() throws Exception {
 		switch (state) {
-			case STOPPED:
-				return;
-			case AUTOMATIC:
-				timer.stop();
-				stopAutomaticRecording();
-				break;
-			case RUNNING:
-				writeLogEntry(startTime, System.currentTimeMillis());
+		case STOPPED:
+			return;
+		case AUTOMATIC:
+			timer.stop();
+			stopAutomaticRecording();
+			break;
+		case RUNNING:
+			writeLogEntry(startTime, System.currentTimeMillis());
 		}
 		switchToStoppedState();
 	}
@@ -444,15 +451,17 @@ class ProjectsTree extends JTree implements TimeLog {
 	 */
 	private void stopAutomaticRecording() throws Exception {
 		switch (config.getAutoCountTowards()) {
-			case NOTHING:
-				break;
-			case UNKNOWN:
-				currentProjectPath = new String[] {"unknown"};
-			case PREVIOUS:
-				writeLogEntry(startTime, System.currentTimeMillis());
+		case NOTHING:
+			break;
+		case UNKNOWN:
+			currentProjectPath = new String[] {"unknown"};
+			//$FALL-THROUGH$
+		case PREVIOUS:
+			writeLogEntry(startTime, System.currentTimeMillis());
 		}
 	}
 
+	@Override
 	public void doPeriodicAction() {
 		try {
 			if (state == State.AUTOMATIC) {
@@ -482,6 +491,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		writeLogEntry(startTime, startTime);
 	}
 
+	@Override
 	public void writeLogEntry(long startTime, long endTime) throws Exception {
 		String startTimeS = df.format(new Date(startTime));
 		String endTimeS = df.format(new Date(endTime));
@@ -493,15 +503,17 @@ class ProjectsTree extends JTree implements TimeLog {
 		out.close();
 	}
 
+	@Override
 	public void switchToActiveState(String[] projectPath) {
 		int delay = config.getIntervalInSeconds() * 1000;
 		timer.setDelay(delay);
 		timer.setInitialDelay(delay);
-		timer.restart();		
+		timer.restart();
 		state = State.RUNNING;
 		repaint();
 	}
 
+	@Override
 	public void switchToSemiActiveState() {
 		int delay = config.getWaitInSeconds() * 1000;
 		timer.setDelay(delay);
@@ -511,46 +523,51 @@ class ProjectsTree extends JTree implements TimeLog {
 		repaint();
 	}
 
+	@Override
 	public void switchToStoppedState() {
 		state = State.STOPPED;
 		repaint();
 	}
 
+	@Override
 	public void minimiseOrHide() {
 		new Thread() {
+			@Override
 			public void run() {
 				try {Thread.sleep(150);}
 				catch (InterruptedException e) {e.printStackTrace();}
 				switch (config.getBehaviour()) {
-					case MINIMISE:
-						frame.setExtendedState(Frame.ICONIFIED);
-						break;
-					case HIDE:
-						frame.setVisible(false);
-						break;
-					case SHOW:
-						break;				
+				case MINIMISE:
+					frame.setExtendedState(Frame.ICONIFIED);
+					break;
+				case HIDE:
+					frame.setVisible(false);
+					break;
+				case SHOW:
+					break;
 				}
 			}
 		}.start();
 	}
 
+	@Override
 	public void unminimiseOrShow() {
 		switch (config.getBehaviour()) {
-			case MINIMISE:
-				frame.setExtendedState(Frame.NORMAL);
-				break;
-			case HIDE:
-			case SHOW:
-				frame.setVisible(true);
-				break;				
+		case MINIMISE:
+			frame.setExtendedState(Frame.NORMAL);
+			break;
+		case HIDE:
+		case SHOW:
+			frame.setVisible(true);
+			break;
 		}
 	}
 
+	@Override
 	public void displayProblem(Exception e) {
 		JOptionPane.showMessageDialog(this, "A problem has occurred: " + e.getMessage());
 	}
-	
+
 	/**
 	 * Obtains the currently active project node.
 	 *

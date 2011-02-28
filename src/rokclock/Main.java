@@ -64,6 +64,7 @@ public class Main extends JFrame {
 		// pack();
 		setAlwaysOnTop(true);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent ev) {
 				try {projectsTree.stopRecording();}
 				catch (Exception ex) {ex.printStackTrace();}
@@ -83,6 +84,7 @@ public class Main extends JFrame {
 		b.setBackground(Color.BLACK);
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				stopRecording();
 			}
@@ -101,6 +103,7 @@ public class Main extends JFrame {
 		b.setBackground(Color.BLACK);
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				stopRecording();
 				new ReviewDialog(Main.this, config);
@@ -138,7 +141,7 @@ public class Main extends JFrame {
 	 *             Thrown if the copying failed.
 	 */
 	public static void copyFile(File sourceFile, File destFile)
-			throws IOException {
+	throws IOException {
 		if (!destFile.exists())
 			destFile.createNewFile();
 		FileChannel source = null;

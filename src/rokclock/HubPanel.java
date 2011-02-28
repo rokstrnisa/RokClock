@@ -64,6 +64,7 @@ class HubPanel extends JPanel {
 		b.setBackground(Color.BLACK);
 		b.setForeground(Color.GRAY);
 		b.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (reviewDialog.isIntervalCustom()) {
 					JOptionPane
