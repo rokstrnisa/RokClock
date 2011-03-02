@@ -483,8 +483,10 @@ class ReviewDialog extends JDialog implements CaretListener {
 		}
 		totalLabel.setText(decimalFormat.format(total));
 		totalLabel.setForeground(normalColour);
-		for (Row row : rows.values())
-			row.percentL.setText("(" + decimalFormat.format(100 * row.hours / total) + "%)");
+		for (Row row : rows.values()) {
+			String percentS = decimalFormat.format(total == 0 ? 0 : 100 * row.hours / total);
+			row.percentL.setText("(" + percentS + "%)");
+		}
 		pack();
 	}
 
@@ -501,11 +503,18 @@ class ReviewDialog extends JDialog implements CaretListener {
 		b.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				fileChooser.setSelectedFile(new File(getDefaultFilename()));
-				int returnValue = fileChooser.showDialog(ReviewDialog.this, "Save");
-				if (returnValue != JFileChooser.APPROVE_OPTION) return;
-				writeToFile(fileChooser.getSelectedFile());
-				ReviewDialog.this.setVisible(false);
+				try {
+					checkTotal();
+					fileChooser.setSelectedFile(new File(getDefaultFilename()));
+					int returnValue = fileChooser.showDialog(ReviewDialog.this, "Save");
+					if (returnValue != JFileChooser.APPROVE_OPTION) return;
+					writeToFile(fileChooser.getSelectedFile());
+					ReviewDialog.this.setVisible(false);
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(ReviewDialog.this,
+							ex.getMessage(), "Error occurred",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		return b;
@@ -556,21 +565,35 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 *
 	 * @param f
 	 *            The file to write to.
+	 * @throws IOException
+	 * @throws InsufficientDataException
 	 */
-	public void writeToFile(File f) {
+	public void writeToFile(File f) throws IOException, InsufficientDataException {
+		double total = checkTotal();
 		final String nl = "\r\n";
-		try {
-			// f.getParentFile().mkdirs();
-			f.createNewFile();
-			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-			double total = Double.parseDouble(totalLabel.getText());
-			for (Entry<String, Row> entry : rows.entrySet()) {
-				double hours = Double.parseDouble(entry.getValue().hoursTF.getText());
-				double fraction = hours / total;
-				bw.write(entry.getKey() + "," + decimalFormat.format(fraction) + nl);
-			}
-			bw.close();
-		} catch (IOException e) {e.printStackTrace();}
+		f.createNewFile();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+		for (Entry<String, Row> entry : rows.entrySet()) {
+			double hours = Double.parseDouble(entry.getValue().hoursTF.getText());
+			double fraction = hours / total;
+			bw.write(entry.getKey() + "," + decimalFormat.format(fraction) + nl);
+		}
+		bw.close();
+	}
+
+	/**
+	 * A helper function that obtains the total number of hours for the selected
+	 * period.
+	 *
+	 * @return Total number of hours.
+	 * @throws InsufficientDataException
+	 *             Thrown if the total is zero.
+	 */
+	private double checkTotal() throws InsufficientDataException {
+		double total = Double.parseDouble(totalLabel.getText());
+		if (total == 0)
+			throw new InsufficientDataException("Cannot submit data with no logged hours.");
+		return total;
 	}
 
 	@Override

@@ -112,13 +112,13 @@ public class Config {
 	}
 
 	/**
-	 * Obtains the current user's username at the specified hub. This is used
-	 * for logging purposes.
+	 * Obtains the current user's full name. This is used for logging purposes
+	 * on the hub only.
 	 *
-	 * @return The user's username.
+	 * @return The user's full name.
 	 */
-	public String getUsernameOnHub() {
-		return get("usernameOnHub", String.class);
+	public String getFullname() {
+		return get("fullname", String.class);
 	}
 
 	/**

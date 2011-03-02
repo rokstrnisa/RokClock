@@ -86,27 +86,25 @@ class HubPanel extends JPanel {
 				int random = findFreshRandom(weekDir);
 				File logFile = new File(weekDir + "/" + random + ".log");
 				File submittedFile = new File(weekDir + "/submitted.txt");
+				String fullname = config.getFullname();
 				try {
-					String user = config.getUsernameOnHub();
-					if (user.equals("undefined"))
+					if (fullname.equals("undefined"))
 						throw new IOException(
-								"Please set the property 'usernameOnHub' in RokClock's 'config.txt' to your unix username (on the filesystem that contains '"
-								+ baseAddress + "').");
+						"Please set the property 'fullname' in RokClock's 'config.txt' to your full name (as used by your manager).");
 					String date = Config.df.format(new Date());
 					reviewDialog.writeToFile(logFile);
 					BufferedWriter bw = new BufferedWriter(new FileWriter(submittedFile, true));
-					bw.write(random + "," + user + "," + date + "\r\n");
+					bw.write(random + "," + fullname + "," + date + "\r\n");
 					bw.close();
-				} catch (IOException ex) {
+					JOptionPane.showMessageDialog(reviewDialog,
+							"Data successfully saved to the hub.", "Success",
+							JOptionPane.INFORMATION_MESSAGE);
+					reviewDialog.setVisible(false);
+				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(reviewDialog,
 							ex.getMessage(), "Error occurred",
 							JOptionPane.ERROR_MESSAGE);
-					return;
 				}
-				JOptionPane.showMessageDialog(reviewDialog,
-						"Data successfully saved to the hub.", "Success",
-						JOptionPane.INFORMATION_MESSAGE);
-				reviewDialog.setVisible(false);
 			}
 		});
 		return b;
