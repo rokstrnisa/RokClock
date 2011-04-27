@@ -168,6 +168,22 @@ public class Main extends JFrame {
 	 *             Thrown if creation of the new instance throws an exception.
 	 */
 	public static void main(String[] args) throws Exception {
-		new Main();
+		final Main main = new Main();
+		// if we can, allow minimise to system tray
+		if (SystemTray.isSupported()) {
+			final String iconFilename = main.config.getIconFilename();
+			// if we don't have an icon file, then we can't make a system tray icon
+			// in the future we should provide a default
+			if (iconFilename != "") {
+				final TrayIcon trayIcon = new TrayIcon((new ImageIcon(iconFilename, "RokIkon")).getImage());
+				final SystemTray tray = SystemTray.getSystemTray();
+				tray.add(trayIcon);
+				trayIcon.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						main.setVisible(!main.isVisible());
+					}
+				});
+			}
+		}
 	}
 }
