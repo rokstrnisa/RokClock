@@ -264,6 +264,19 @@ public class Config {
 	}
 
 	/**
+	 * Obtains the filename of the system tray icon.
+	 *
+	 * @return The icon filename.
+	 */
+	String getIconFilename() {
+		String icon = get("icon", String.class);
+		if (icon == null)
+			return "";
+		else
+			return processFilePath(icon);
+	}
+
+	/**
 	 * A generic method for obtaining values from either the user or the default
 	 * configuration file. The type of the value required is determined from the
 	 * class object provided.
