@@ -72,6 +72,7 @@ public class Main extends JFrame {
 			}
 		});
 		setVisible(true);
+		enableTrayIcon();
 	}
 
 	/**
@@ -131,6 +132,25 @@ public class Main extends JFrame {
 	}
 
 	/**
+	 * Enable system tray icon if supported and filename for icon specified.
+	 */
+	private void enableTrayIcon() {
+		if (!SystemTray.isSupported()) return;
+		String iconFilename = config.getIconFilename();
+		if (iconFilename == "") return;
+		TrayIcon trayIcon = new TrayIcon(new ImageIcon(iconFilename, "RokIkon").getImage());
+		trayIcon.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {setVisible(!isVisible());}
+		});
+		try {SystemTray.getSystemTray().add(trayIcon);}
+		catch (AWTException e) {
+			System.err.println("Could not add icon to icon tray.");
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * A helper, platform-independent function to copy a file.
 	 *
 	 * @param sourceFile
@@ -168,22 +188,6 @@ public class Main extends JFrame {
 	 *             Thrown if creation of the new instance throws an exception.
 	 */
 	public static void main(String[] args) throws Exception {
-		final Main main = new Main();
-		// if we can, allow minimise to system tray
-		if (SystemTray.isSupported()) {
-			final String iconFilename = main.config.getIconFilename();
-			// if we don't have an icon file, then we can't make a system tray icon
-			// in the future we should provide a default
-			if (iconFilename != "") {
-				final TrayIcon trayIcon = new TrayIcon((new ImageIcon(iconFilename, "RokIkon")).getImage());
-				final SystemTray tray = SystemTray.getSystemTray();
-				tray.add(trayIcon);
-				trayIcon.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						main.setVisible(!main.isVisible());
-					}
-				});
-			}
-		}
+		new Main();
 	}
 }

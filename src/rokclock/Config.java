@@ -269,11 +269,8 @@ public class Config {
 	 * @return The icon filename.
 	 */
 	String getIconFilename() {
-		String icon = get("icon", String.class);
-		if (icon == null)
-			return "";
-		else
-			return processFilePath(icon);
+		String iconPath = get("iconPath", String.class);
+		return iconPath == null ? "" : processFilePath(iconPath);
 	}
 
 	/**
