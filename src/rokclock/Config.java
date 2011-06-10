@@ -273,14 +273,13 @@ public class Config {
 		return iconPath == null ? "" : processFilePath(iconPath);
 	}
 
-        /**
-          * Obtains the Users unique identifier for person specific tracking.
-          *
-	  * @return The users unique identifier.
-	  */
-        String getUID() {
-	    String userCode = get("uid", String.class);
-	    return userCode == null ? "" : userCode;
+	/**
+	 * Obtains the Users unique identifier for person specific tracking.
+	 *
+	 * @return The users unique identifier.
+	 */
+	String getUID() {
+		return get("uid", String.class);
 	}
 
 	/**
