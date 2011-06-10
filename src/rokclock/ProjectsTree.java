@@ -495,7 +495,8 @@ class ProjectsTree extends JTree implements TimeLog {
 	public void writeLogEntry(long startTime, long endTime) throws Exception {
 		String startTimeS = df.format(new Date(startTime));
 		String endTimeS = df.format(new Date(endTime));
-		String entry = startTimeS + "," + endTimeS;
+		String uid = config.getUID();
+		String entry = (uid.equals("") ? "" : uid + ",") + startTimeS + "," + endTimeS;
 		for (String projectPathNode : currentProjectPath)
 			entry += "," + projectPathNode;
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(config.getLogFilename(), true)));
