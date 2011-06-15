@@ -73,6 +73,15 @@ public class Config {
 	 *
 	 * @return The projects' file name.
 	 */
+	boolean getAlwaysOnTop() {
+		return get("alwaysOnTop", Boolean.class);
+	}
+
+	/**
+	 * Obtains the name of the projects' file. Default is "projects.txt".
+	 *
+	 * @return The projects' file name.
+	 */
 	String getProjectsFilename() {
 		return processFilePath(get("projectsFilename", String.class));
 	}

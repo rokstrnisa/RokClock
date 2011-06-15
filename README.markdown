@@ -50,6 +50,9 @@ The configuration for the program is located in the `config.txt` file. (If
 
 ### 4.1 Configuration options ###
 
+- `alwaysOnTop` (default: `true`): Determines whether the window should be
+  always on top of other windows.
+
 - `locX` (default: `600`): The horizontal starting coordinate of the window.
 
 - `locY` (default: `400`): The vertical starting coordinate of the window.

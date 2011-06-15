@@ -62,7 +62,7 @@ public class Main extends JFrame {
 		getContentPane().add(stopButton);
 		getContentPane().add(reviewAndSendButton);
 		// pack();
-		setAlwaysOnTop(true);
+		setAlwaysOnTop(config.getAlwaysOnTop());
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent ev) {
