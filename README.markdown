@@ -50,54 +50,54 @@ The configuration for the program is located in the `config.txt` file. (If
 
 ### 4.1 Configuration options ###
 
-- `alwaysOnTop` (default: `true`): Determines whether the window should be
-  always on top of other windows.
-
-- `locX` (default: `600`): The horizontal starting coordinate of the window.
-
-- `locY` (default: `400`): The vertical starting coordinate of the window.
-
-- `width` (default: `170`): The starting width of the window.
-
-- `height` (default: `480`): The starting height of the window.
-
-- `intervalInSeconds` (default: `3600`): The period (in seconds) after which the
-  program will prompt you again.
-
-- `waitInSeconds` (default: `3600`): The period (in seconds) after the prompt in
-  which any user interaction will result in automatically counting the time from
-  the prompt to the user interaction towards whatever is specified for the
-  `autoCountTowards` option.
-
-- `defaultColor` (default: `0,255,0`): The Red-Green-Blue specification for the
-  _default colour_ of the project nodes.
-
 - `activeColor` (default: `255,0,0`): The Red-Green-Blue specification for the
   _active colour_ of the project nodes.
 
-- `semiActiveColor` (default: `100,100,200`): The Red-Green-Blue specification
-  for the _semi-active colour_ of the project nodes, i.e. the colour for a
-  previously active node within the waiting period.
-
-- `behaviour` (default: `minimise`): The window state to go to after the user
-  has selected a project. Option `hide` removes the program even from the
-  taskbar, while `show` keeps the window visible.
+- `alwaysOnTop` (default: `true`): Determines whether the window should be
+  always on top of other windows.
 
 - `autoCountTowards` (default: `previous`): See option `waitInSeconds`. The
   `previous` option counts towards the last selected project. The `unknown`
   option counts towards the "unknown" root project. The `nothing` option does
   not count towards anything.
 
-- `writeTimeouts` (default: `false`): If set to `true`, the program writes a log
-  entry whenever the end of a wait period is reached without being interrupted
-  by the user. The log entry consists of the start time and the end time equal
-  to the end time of the previous log entry, and is titled `(timed out)`.
+- `behaviour` (default: `minimise`): The window state to go to after the user
+  has selected a project. Option `hide` removes the program even from the
+  taskbar, while `show` keeps the window visible.
+
+- `defaultColor` (default: `0,255,0`): The Red-Green-Blue specification for the
+  _default colour_ of the project nodes.
+
+- `height` (default: `480`): The starting height of the window.
+
+- `intervalInSeconds` (default: `3600`): The period (in seconds) after which the
+  program will prompt you again.
+
+- `locX` (default: `600`): The horizontal starting coordinate of the window.
+
+- `locY` (default: `400`): The vertical starting coordinate of the window.
 
 - `logFilename` (default: `log.txt`): The filename of the log file.
 
 - `projectsFilename` (default: `projects.txt`): The filename of the projects
   file. (If the specified file does not exist once the program starts, it is
   copied from `projects.txt.default`.)
+
+- `semiActiveColor` (default: `100,100,200`): The Red-Green-Blue specification
+  for the _semi-active colour_ of the project nodes, i.e. the colour for a
+  previously active node within the waiting period.
+
+- `waitInSeconds` (default: `3600`): The period (in seconds) after the prompt in
+  which any user interaction will result in automatically counting the time from
+  the prompt to the user interaction towards whatever is specified for the
+  `autoCountTowards` option.
+
+- `width` (default: `170`): The starting width of the window.
+
+- `writeTimeouts` (default: `false`): If set to `true`, the program writes a log
+  entry whenever the end of a wait period is reached without being interrupted
+  by the user. The log entry consists of the start time and the end time equal
+  to the end time of the previous log entry, and is titled `(timed out)`.
 
 ### 4.2 Specifying the projects ###
 The projects are specified in the projects file (its path is specified within
