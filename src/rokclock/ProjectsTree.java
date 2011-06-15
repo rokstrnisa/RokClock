@@ -155,6 +155,13 @@ class ProjectsTree extends JTree implements TimeLog {
 				}
 			}
 		});
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					startRecordingAndMinimise(currentProjectPath);
+			}
+		});
 		timer = createTimer();
 		ToolTipManager.sharedInstance().registerComponent(this);
 		frame.add(createPopupMenu());
@@ -384,10 +391,7 @@ class ProjectsTree extends JTree implements TimeLog {
 		String[] projectPath = new String[path.getPathCount() - 1];
 		for (int i = 1; i < path.getPathCount(); i++)
 			projectPath[i-1] = ((ProjectNode) path.getPathComponent(i)).getUserObject().toString();
-		try {
-			startRecording(projectPath);
-			minimiseOrHide();
-		} catch (Exception ex) {displayProblem(ex);}
+		startRecordingAndMinimise(projectPath);
 	}
 
 	/**
@@ -416,6 +420,20 @@ class ProjectsTree extends JTree implements TimeLog {
 		lastRightClickedPath = getPathForLocation(e.getX(), e.getY());
 		if (lastRightClickedPath != null)
 			popupMenu.show(frame, e.getX(), e.getY());
+	}
+
+	/**
+	 * A helper method that starts recording and (optionally) minimises the
+	 * window. Any exception thrown is displayed to the user.
+	 *
+	 * @param projectPath
+	 *            The project path to record for.
+	 */
+	private void startRecordingAndMinimise(String[] projectPath) {
+		try {
+			startRecording(projectPath);
+			minimiseOrHide();
+		} catch (Exception ex) {displayProblem(ex);}
 	}
 
 	@Override
