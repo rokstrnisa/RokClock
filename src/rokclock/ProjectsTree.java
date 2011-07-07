@@ -158,7 +158,8 @@ class ProjectsTree extends JTree implements TimeLog {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+				if (e.getKeyCode() == KeyEvent.VK_ENTER
+						&& currentProjectPath != null)
 					startRecordingAndMinimise(currentProjectPath);
 			}
 		});
