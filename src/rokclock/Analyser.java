@@ -1,8 +1,18 @@
 package rokclock;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import static java.lang.System.err;
+import static java.lang.System.exit;
+import static java.lang.System.out;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The analyser of the log files. It currently provides a summary for top-level
@@ -28,8 +38,8 @@ public class Analyser {
 	 */
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1 && args.length != 3) {
-			System.err.println("Usage: java -cp bin rokclock.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]");
-			System.exit(1);
+			err.println("Usage: java -cp bin rokclock.Analyser <logFilename> [<start date inclusive> <stop date exclusive>]");
+			exit(1);
 		}
 		String logFilename = args[0];
 		Date fromDate = null, toDate = null;
@@ -40,12 +50,12 @@ public class Analyser {
 				fromDate = df.parse(args[1]);
 				toDate = df.parse(args[2]);
 			} catch (ParseException e) {
-				System.err.println("Dates should be specified in the following format: " + dfS);
-				System.exit(1);
+				err.println("Dates should be specified in the following format: " + dfS);
+				exit(1);
 			}
-		Analyser a = new Analyser();
-		a.processLogFile(logFilename, fromDate, toDate);
-		a.displayResults();
+			Analyser a = new Analyser();
+			a.processLogFile(logFilename, fromDate, toDate);
+			a.displayResults(false);
 	}
 
 	/**
@@ -77,7 +87,7 @@ public class Analyser {
 	 * @throws IOException
 	 *             Thrown if reading or parsing fails.
 	 */
-	Map<String,Long> processLogFile(String logFilename, Date fromDate, Date toDate) throws IOException {
+	Map<String, Long> processLogFile(String logFilename, Date fromDate, Date toDate) throws IOException {
 		sums = new TreeMap<String,Long>();
 		this.fromDate = fromDate;
 		this.toDate = toDate;
@@ -86,10 +96,12 @@ public class Analyser {
 		int lineNumber = 0;
 		while ((line = br.readLine()) != null)
 			try {lineNumber++; readLogEntry(line);}
-			catch (Exception e) {
-				System.err.println("Could not process log entry on line "
-						+ lineNumber + ": \"" + line + "\"");
-			}
+		catch (Exception e) {
+			err.println("Could not process log entry on line "
+					+ lineNumber + ": \"" + line + "\"");
+			e.printStackTrace();
+			return null;
+		}
 		br.close();
 		return sums;
 	}
@@ -106,12 +118,13 @@ public class Analyser {
 	 *            A single log entry to process.
 	 */
 	private void readLogEntry(String entry) {
-		String[] fields = entry.split("\\s*,\\s*");
+		String[] fields = entry.split("\\s*,\\s*", 3);
 		try { // try new format
 			Config.df.parse(fields[0]);
-			recordData(entry, fields[2], fields[0], fields[1]);
+			recordData(fields[0], fields[1], fields[2]);
 		} catch (ParseException e) { // old format
-			recordData(entry, fields[0], fields[2], fields[3]);
+			fields = entry.split("\\s*,\\s*", 4);
+			recordData(fields[2], fields[3], fields[0]);
 		}
 	}
 
@@ -119,16 +132,14 @@ public class Analyser {
 	 * Records the data from a single log entry, independent from the log
 	 * format.
 	 *
-	 * @param entry
-	 *            The whole log entry; used for debugging purposes only.
-	 * @param project
-	 *            The name of the top-level project.
 	 * @param start
 	 *            The start of the activity.
 	 * @param end
 	 *            The end of the activity.
+	 * @param projectPath
+	 *            The name of the top-level project.
 	 */
-	private void recordData(String entry, String project, String start, String end) {
+	private void recordData(String start, String end, String projectPath) {
 		try {
 			Date startDate = Config.df.parse(start);
 			Date endDate = Config.df.parse(end);
@@ -141,25 +152,37 @@ public class Analyser {
 			if (startDate.after(endDate))
 				return;
 			// calculate and add
-			Long sum = sums.get(project);
+			Long sum = sums.get(projectPath);
 			if (sum == null)
 				sum = 0L;
-			sum += (endDate.getTime() - startDate.getTime());
-			sums.put(project, sum);
+			sum += endDate.getTime() - startDate.getTime();
+			sums.put(projectPath, sum);
 		} catch (ParseException e) {
-			System.err.println("Could not parse log entry: " + entry);
+			err.println("Could not parse log entry dates: " + start + ", " + end);
 		}
 	}
 
 	/**
 	 * Outputs results of the analyser to the standard output.
+	 *
+	 * @throws IOException Thrown if configuration cannot be read.
 	 */
-	private void displayResults() {
+	private void displayResults(boolean relative) throws IOException {
+		long factor = relative ? getTotal() : 1000 * 3600;
+		Config config = new Config();
+		String team = config.getTeam();
 		for (Map.Entry<String, Long> entry : sums.entrySet()) {
-			String project = entry.getKey();
+			String projectPath = entry.getKey();
 			long sum = entry.getValue();
-			double sumInHours = 1.0 * sum / (1000 * 3600);
-			System.out.printf("%s: %.2f" + nl, project, sumInHours);
+			double sumInHours = 1.0 * sum / factor;
+			out.printf("%s, %.2f, %s" + nl, team, sumInHours, projectPath);
 		}
+	}
+
+	private long getTotal() {
+		long total = 0L;
+		for (long sum : sums.values())
+			total += sum;
+		return total;
 	}
 }

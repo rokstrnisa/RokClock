@@ -560,6 +560,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 * @throws InsufficientDataException
 	 */
 	public void writeToFile(File f) throws IOException, InsufficientDataException {
+		final String team = config.getTeam();
 		double total = checkTotal();
 		final String nl = "\r\n";
 		f.createNewFile();
@@ -567,7 +568,9 @@ class ReviewDialog extends JDialog implements CaretListener {
 		for (Entry<String, Row> entry : rows.entrySet()) {
 			double hours = Double.parseDouble(entry.getValue().hoursTF.getText());
 			double fraction = hours / total;
-			bw.write(entry.getKey() + "," + decimalFormat.format(fraction) + nl);
+			if (fraction < 0.004) continue;
+			String line = team + ", " + decimalFormat.format(fraction) + ", " + entry.getKey();
+			bw.write(line + nl);
 		}
 		bw.close();
 	}
