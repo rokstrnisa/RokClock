@@ -106,20 +106,6 @@ public class Config {
 		return processFilePath(get("logFilename", String.class));
 	}
 
-	boolean getUseHub() {
-		return get("useHub", Boolean.class);
-	}
-
-	/**
-	 * Obtains the absolute file address for the hub where to accumulate data
-	 * from all users.
-	 *
-	 * @return The file address of the hub.
-	 */
-	public String getHub() {
-		return get("hub", String.class);
-	}
-
 	/**
 	 * Obtains the current user's full name. This is used for logging purposes
 	 * on the hub only.
@@ -397,23 +383,5 @@ public class Config {
 	 */
 	private String processFilePath(String path) {
 		return path.replace("~", USER_HOME);
-	}
-
-	/**
-	 * Fetches a list of pre-defined teams specified in the
-	 * <code>settings/teams.txt</code> file at the hub's location.
-	 *
-	 * @return The list of pre-defined team.
-	 * @throws IOException
-	 *             Thrown if problems when reading the file.
-	 */
-	public List<String> fetchTeams() throws IOException {
-		final List<String> teamList = new ArrayList<String>();
-		File teamsFile = new File(getHub() + "/settings/teams.txt");
-		BufferedReader br = new BufferedReader(new FileReader(teamsFile));
-		String line = null;
-		while ((line = br.readLine()) != null)
-			teamList.add(line);
-		return teamList;
 	}
 }
