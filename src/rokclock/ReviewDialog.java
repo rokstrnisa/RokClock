@@ -1,11 +1,12 @@
 package rokclock;
 
 import java.awt.*;
+import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.Map.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -215,6 +216,10 @@ class ReviewDialog extends JDialog implements CaretListener {
 	 */
 	private JButton saveToFileButton = createSaveToFileButton();
 	/**
+	 * The button used to copy the results into the clipboard.
+	 */
+	private JButton copyToClipboardButton = createCopyToClipboardButton();
+	/**
 	 * The file chooser used to choose the file to save to.
 	 */
 	private JFileChooser fileChooser = new JFileChooser();
@@ -268,6 +273,8 @@ class ReviewDialog extends JDialog implements CaretListener {
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridy = 5; gbc.weighty = 0;
 		gbl.setConstraints(saveToFileButton, gbc);
+		gbc.gridy = 6;
+		gbl.setConstraints(copyToClipboardButton, gbc);
 		add(yearLabel);
 		add(yearCB);
 		add(weekLabel);
@@ -278,6 +285,7 @@ class ReviewDialog extends JDialog implements CaretListener {
 		add(toDate);
 		add(scrollReviewPanel);
 		add(saveToFileButton);
+		add(copyToClipboardButton);
 		// layout results
 		updateYearWeekDates();
 		setVisible(true);
@@ -550,29 +558,64 @@ class ReviewDialog extends JDialog implements CaretListener {
 		+ weekCB.getSelectedItem() + ".txt";
 	}
 
-	/**
-	 * This function writes the names of top-level projects, as well as
-	 * percentages of time spent on them.
-	 *
-	 * @param f
-	 *            The file to write to.
-	 * @throws IOException
-	 * @throws InsufficientDataException
-	 */
-	public void writeToFile(File f) throws IOException, InsufficientDataException {
+	private String generateOverviewText() throws InsufficientDataException {
+		StringBuilder sb = new StringBuilder();
 		final String team = config.getTeam();
 		double total = checkTotal();
-		final String nl = "\r\n";
-		f.createNewFile();
-		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+		final String nl = System.getProperty("line.separator");
 		for (Entry<String, Row> entry : rows.entrySet()) {
 			double hours = Double.parseDouble(entry.getValue().hoursTF.getText());
 			double fraction = hours / total;
 			if (fraction < 0.004) continue;
 			String line = team + ", " + decimalFormat.format(fraction) + ", " + entry.getKey();
-			bw.write(line + nl);
+			sb.append(line + nl);
 		}
-		bw.close();
+		return sb.toString();
+	}
+
+	/**
+	 * This function writes the generated relative overview to a file.
+	 *
+	 * @param f
+	 *            The file to write to.
+	 * @throws IOException
+	 *             Thrown if unable to open or write to the file.
+	 * @throws InsufficientDataException
+	 *             Thrown if unable to generate the overview.
+	 */
+	public void writeToFile(File f) throws IOException, InsufficientDataException {
+		f.createNewFile();
+		FileWriter fw = new FileWriter(f);
+		fw.write(generateOverviewText());
+		fw.close();
+	}
+
+	private JButton createCopyToClipboardButton() {
+		JButton button = new JButton("COPY TO CLIPBOARD");
+		button.setBackground(Color.BLACK);
+		button.setForeground(Color.GRAY);
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					copyOverviewToClipboard();
+				} catch (InsufficientDataException ex) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(ReviewDialog.this,
+							"Failed to copy the overview to clipboard: "
+							+ ex.getMessage());
+				}
+			}
+		});
+		return button;
+	}
+
+	private void copyOverviewToClipboard() throws InsufficientDataException {
+		String overview = generateOverviewText();
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(new StringSelection(overview), new ClipboardOwner() {
+			@Override public void lostOwnership(Clipboard c, Transferable t) {}
+		});
 	}
 
 	/**
